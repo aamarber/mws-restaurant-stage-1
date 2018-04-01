@@ -153,6 +153,12 @@ nav h1 a {
   max-width: 1200px;
   margin: 0 auto;
 }
+
+@media (min-width: 1000px) {
+  .restaurants-list {
+    max-width: 90%;
+  }
+}
 .restaurants-list li {
   background-color: #fff;
   border-top-left-radius: 5%;
@@ -164,6 +170,17 @@ nav h1 a {
   text-align: center;
   width: 80%;
 }
+
+@media (min-width: 1000px) {
+  .restaurants-list li {
+    margin: 1%;
+    padding: 3%;
+    width: 40%;
+    display:inline-block;
+    vertical-align: top;
+  }
+}
+
 .restaurants-list .restaurant-img {
   background-color: #ccc;
   margin: 0;
