@@ -92,7 +92,7 @@ function serveStaticContent(request) {
 }
 
 function serveImage(request) {
-  var storageUrl = request.url.replace(/-\d+px\.jpg$/, '');
+  var storageUrl = request.url.replace(/-[0-9]*_[a-z]*.jpg$/, '');
 
   return serveContent(request, storageUrl, imagesCache);
 }
