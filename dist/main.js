@@ -5,6 +5,7 @@ var restaurants = void 0,
     cuisines = void 0;
 var map;
 var markers = [];
+var dbHelper = new DBHelper();
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
  * Fetch all neighborhoods and set their HTML.
  */
 var fetchNeighborhoods = function fetchNeighborhoods() {
-  DBHelper.fetchNeighborhoods(function (error, neighborhoods) {
+  dbHelper.fetchNeighborhoods(function (error, neighborhoods) {
     if (error) {
       // Got an error
       console.error(error);
@@ -49,7 +50,7 @@ var fillNeighborhoodsHTML = function fillNeighborhoodsHTML() {
  * Fetch all cuisines and set their HTML.
  */
 var fetchCuisines = function fetchCuisines() {
-  DBHelper.fetchCuisines(function (error, cuisines) {
+  dbHelper.fetchCuisines(function (error, cuisines) {
     if (error) {
       // Got an error!
       console.error(error);
@@ -118,7 +119,7 @@ var updateRestaurants = function updateRestaurants() {
   var cuisine = cSelect[cIndex].value;
   var neighborhood = nSelect[nIndex].value;
 
-  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, function (error, restaurants) {
+  dbHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, function (error, restaurants) {
     if (error) {
       // Got an error!
       console.error(error);
@@ -164,7 +165,7 @@ var fillRestaurantsHTML = function fillRestaurantsHTML() {
  */
 var createRestaurantHTML = function createRestaurantHTML(restaurant) {
   var li = document.createElement('li');
-
+  //li.setAttribute("aria-current","page");
   appendRestaurantImage(restaurant, li);
 
   var name = document.createElement('h1');
@@ -181,7 +182,7 @@ var createRestaurantHTML = function createRestaurantHTML(restaurant) {
 
   var more = document.createElement('a');
   more.innerHTML = 'View Details';
-  more.href = DBHelper.urlForRestaurant(restaurant);
+  more.href = dbHelper.urlForRestaurant(restaurant);
   more.setAttribute('aria-label', 'View details of ' + restaurant.name);
   li.appendChild(more);
 
@@ -193,22 +194,22 @@ var appendRestaurantImage = function appendRestaurantImage(restaurant, rootEleme
   picture.className = 'restaurant-img';
 
   var image_large = document.createElement('source');
-  //image_large.setAttribute('media', '(min-width: 1000px)');
-  image_large.setAttribute('srcset', DBHelper.imageUrlForRestaurant(restaurant, 'large') + ' 2x, ' + DBHelper.imageUrlForRestaurant(restaurant, 'medium') + ' 1x');
+  image_large.setAttribute('media', '(min-width: 1000px)');
+  image_large.setAttribute('srcset', '' + dbHelper.imageUrlForRestaurant(restaurant, 'large'));
   image_large.setAttribute('alt', restaurant.name);
 
-  // const image_medium = document.createElement('source');
-  // image_medium.setAttribute('media', '(min-width: 650px) and (max-width: 999px)');
-  // image_medium.setAttribute('srcset', DBHelper.imageUrlForRestaurant(restaurant, 'medium'));
-  // image_medium.setAttribute('alt', restaurant.name);
+  var image_medium = document.createElement('source');
+  image_medium.setAttribute('media', '(min-width: 650px) and (max-width: 999px)');
+  image_medium.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'medium'));
+  image_medium.setAttribute('alt', restaurant.name);
 
   var image = document.createElement('img');
-  image.setAttribute('srcset', DBHelper.imageUrlForRestaurant(restaurant, 'small'));
-  image.setAttribute('src', DBHelper.imageUrlForRestaurant(restaurant, 'small'));
+  image.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
+  image.setAttribute('src', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
   image.setAttribute('alt', restaurant.name);
 
   picture.appendChild(image_large);
-  //picture.appendChild(image_medium);
+  picture.appendChild(image_medium);
   picture.appendChild(image);
 
   rootElement.appendChild(picture);
@@ -222,7 +223,7 @@ var addMarkersToMap = function addMarkersToMap() {
 
   restaurants.forEach(function (restaurant) {
     // Add marker to the map
-    var marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
+    var marker = dbHelper.mapMarkerForRestaurant(restaurant, self.map);
     google.maps.event.addListener(marker, 'click', function () {
       window.location.href = marker.url;
     });

@@ -10,9 +10,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var DBHelper = function () {
   function DBHelper() {
     _classCallCheck(this, DBHelper);
+
+    // The 'cache' of the restaurants json result
+    this.data = '';
   }
 
-  _createClass(DBHelper, null, [{
+  /**
+   * Database URL.
+   * Change this to restaurants.json file location on your server.
+   */
+
+
+  _createClass(DBHelper, [{
     key: 'fetchRestaurants',
 
 
@@ -20,21 +29,49 @@ var DBHelper = function () {
      * Fetch all restaurants.
      */
     value: function fetchRestaurants(callback) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', DBHelper.DATABASE_URL);
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          // Got a success response from server!
-          var json = JSON.parse(xhr.responseText);
-          var restaurants = json.restaurants;
-          callback(null, restaurants);
-        } else {
-          // Oops!. Got an error from server.
-          var error = 'Request failed. Returned status of ' + xhr.status;
-          callback(error, null);
-        }
+      var _this = this;
+
+      if (this.data) {
+        callback(null, this.data.restaurants);
+        return;
+      }
+
+      //This is to avoid multiple requests for the restaurant.json
+      if (this.xhr && this.xhr.readyState === 1) {
+        var originalCallback = this.xhr.onload;
+
+        /** The original onload callback is stored, I change it by a new one which calls the callback passed as an argument and the original callback
+         * Example
+         * Request 1 onload: function() { fetchRestaurantById() };
+         * Request 2 onload: function(){ request1Callback(); fetchRestaurantByCuisine(); }
+         */
+        this.xhr.onload = function () {
+          originalCallback();
+          _this.fetchRestaurantsOnLoad(callback, _this.xhr);
+        };
+        return;
+      }
+
+      this.xhr = new XMLHttpRequest();
+      this.xhr.open('GET', this.DATABASE_URL, true);
+      this.xhr.onload = function () {
+        _this.fetchRestaurantsOnLoad(callback, _this.xhr);
       };
-      xhr.send();
+      this.xhr.send();
+    }
+  }, {
+    key: 'fetchRestaurantsOnLoad',
+    value: function fetchRestaurantsOnLoad(callback, xhr) {
+      if (xhr.status === 200) {
+        // Got a success response from server!
+        this.data = JSON.parse(xhr.responseText);
+        var restaurants = this.data.restaurants;
+        callback(null, restaurants);
+      } else {
+        // Oops!. Got an error from server.
+        var error = 'Request failed. Returned status of ' + xhr.status;
+        callback(error, null);
+      }
     }
 
     /**
@@ -45,7 +82,7 @@ var DBHelper = function () {
     key: 'fetchRestaurantById',
     value: function fetchRestaurantById(id, callback) {
       // fetch all restaurants with proper error handling.
-      DBHelper.fetchRestaurants(function (error, restaurants) {
+      this.fetchRestaurants(function (error, restaurants) {
         if (error) {
           callback(error, null);
         } else {
@@ -71,7 +108,7 @@ var DBHelper = function () {
     key: 'fetchRestaurantByCuisine',
     value: function fetchRestaurantByCuisine(cuisine, callback) {
       // Fetch all restaurants  with proper error handling
-      DBHelper.fetchRestaurants(function (error, restaurants) {
+      this.fetchRestaurants(function (error, restaurants) {
         if (error) {
           callback(error, null);
         } else {
@@ -92,7 +129,7 @@ var DBHelper = function () {
     key: 'fetchRestaurantByNeighborhood',
     value: function fetchRestaurantByNeighborhood(neighborhood, callback) {
       // Fetch all restaurants
-      DBHelper.fetchRestaurants(function (error, restaurants) {
+      this.fetchRestaurants(function (error, restaurants) {
         if (error) {
           callback(error, null);
         } else {
@@ -113,7 +150,7 @@ var DBHelper = function () {
     key: 'fetchRestaurantByCuisineAndNeighborhood',
     value: function fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
       // Fetch all restaurants
-      DBHelper.fetchRestaurants(function (error, restaurants) {
+      this.fetchRestaurants(function (error, restaurants) {
         if (error) {
           callback(error, null);
         } else {
@@ -143,7 +180,7 @@ var DBHelper = function () {
     key: 'fetchNeighborhoods',
     value: function fetchNeighborhoods(callback) {
       // Fetch all restaurants
-      DBHelper.fetchRestaurants(function (error, restaurants) {
+      this.fetchRestaurants(function (error, restaurants) {
         if (error) {
           callback(error, null);
         } else {
@@ -168,7 +205,7 @@ var DBHelper = function () {
     key: 'fetchCuisines',
     value: function fetchCuisines(callback) {
       // Fetch all restaurants
-      DBHelper.fetchRestaurants(function (error, restaurants) {
+      this.fetchRestaurants(function (error, restaurants) {
         if (error) {
           callback(error, null);
         } else {
@@ -221,19 +258,13 @@ var DBHelper = function () {
       var marker = new google.maps.Marker({
         position: restaurant.latlng,
         title: restaurant.name,
-        url: DBHelper.urlForRestaurant(restaurant),
+        url: this.urlForRestaurant(restaurant),
         map: map,
         animation: google.maps.Animation.DROP });
       return marker;
     }
   }, {
     key: 'DATABASE_URL',
-
-
-    /**
-     * Database URL.
-     * Change this to restaurants.json file location on your server.
-     */
     get: function get() {
       var port = 8887; // Change this to your server port
       return 'http://127.0.0.1:' + port + '/data/restaurants.json';

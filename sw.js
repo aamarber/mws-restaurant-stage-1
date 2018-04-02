@@ -1,5 +1,5 @@
 var jsFolder = 'dist';
-var staticCache = 'restaurant-reviews-v1';
+var staticCache = 'restaurant-statics-v1';
 var imagesCache = 'restaurant-reviews-imgs-v1';
 var jsonDataCache = 'restaurant-data-v1';
 var restaurantsCache = 'restaurants-v1';

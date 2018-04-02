@@ -2,6 +2,7 @@
 
 var restaurant = void 0;
 var map;
+var dbHelper = new DBHelper();
 
 document.addEventListener('DOMContentLoaded', function (event) {
   fetchRestaurantFromURL();
@@ -13,10 +14,9 @@ var initServiceWorker = function initServiceWorker() {
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('/sw.js').then(function (registration) {
         // Registration was successful
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        //console.log('ServiceWorker registration successful with scope: ', registration.scope);
       }).catch(function (err) {
         // registration failed :(
-        console.log('ServiceWorker registration failed: ', err);
       });
     });
   }
@@ -37,7 +37,7 @@ var initMap = function initMap() {
         scrollwheel: false
       });
       fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+      dbHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
 };
@@ -57,7 +57,7 @@ var fetchRestaurantFromURL = function fetchRestaurantFromURL(callback) {
     error = 'No restaurant id in URL';
     callback(error, null);
   } else {
-    DBHelper.fetchRestaurantById(id, function (error, restaurant) {
+    dbHelper.fetchRestaurantById(id, function (error, restaurant) {
       self.restaurant = restaurant;
       if (!restaurant) {
         console.error(error);
@@ -105,17 +105,17 @@ var fillRestaurantPicture = function fillRestaurantPicture(restaurant) {
 
   var image_large = document.createElement('source');
   image_large.setAttribute('media', '(min-width: 1000px)');
-  image_large.setAttribute('srcset', DBHelper.imageUrlForRestaurant(restaurant, 'large'));
+  image_large.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'large'));
   image_large.setAttribute('alt', restaurant.name);
 
   var image_medium = document.createElement('source');
   image_medium.setAttribute('media', '(min-width: 650px)');
-  image_medium.setAttribute('srcset', DBHelper.imageUrlForRestaurant(restaurant, 'medium'));
+  image_medium.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'medium'));
   image_medium.setAttribute('alt', restaurant.name);
 
   var image = document.createElement('img');
-  image.setAttribute('srcset', DBHelper.imageUrlForRestaurant(restaurant, 'small'));
-  image.setAttribute('src', DBHelper.imageUrlForRestaurant(restaurant, 'small'));
+  image.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
+  image.setAttribute('src', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
   image.setAttribute('alt', restaurant.name);
 
   picture.appendChild(image_large);
@@ -165,18 +165,26 @@ var fillReviewsHTML = function fillReviewsHTML() {
     return;
   }
 
+  var reviewsList = document.createElement('ul');
+  reviewsList.className = 'reviews-list';
+
   reviews.forEach(function (review) {
-    container.appendChild(createReviewHTML(review));
+    reviewsList.appendChild(createReviewHTML(review));
   });
-  //container.appendChild(ul);
+  container.appendChild(reviewsList);
 };
 
 /**
  * Create review HTML and add it to the webpage.
  */
 var createReviewHTML = function createReviewHTML(review) {
+
+  var li = document.createElement('li');
+  li.className = 'review';
+
   var reviewArticle = document.createElement('article');
-  reviewArticle.className = 'review';
+
+  li.appendChild(reviewArticle);
 
   var reviewHeader = document.createElement('div');
   reviewHeader.className = 'review-header';
@@ -199,7 +207,7 @@ var createReviewHTML = function createReviewHTML(review) {
   comments.innerHTML = review.comments;
   reviewArticle.appendChild(comments);
 
-  return reviewArticle;
+  return li;
 };
 
 /**

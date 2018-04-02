@@ -2,41 +2,72 @@
  * Common database helper functions.
  */
 class DBHelper {
+  constructor(){
+    // The 'cache' of the restaurants json result
+    this.data = '';
+  }
 
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
-  static get DATABASE_URL() {
+  get DATABASE_URL() {
     const port = 8887 // Change this to your server port
     return `http://127.0.0.1:${port}/data/restaurants.json`;
   }
 
+  
+  
   /**
    * Fetch all restaurants.
    */
-  static fetchRestaurants(callback) {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', DBHelper.DATABASE_URL);
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json.restaurants;
-        callback(null, restaurants);
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`);
-        callback(error, null);
-      }
+  fetchRestaurants(callback) {
+    if(this.data){
+      callback(null, this.data.restaurants);
+      return;
+    }
+
+    //This is to avoid multiple requests for the restaurant.json
+    if(this.xhr && this.xhr.readyState === 1){
+      const originalCallback = this.xhr.onload;
+
+      /** The original onload callback is stored, I change it by a new one which calls the callback passed as an argument and the original callback
+       * Example
+       * Request 1 onload: function() { fetchRestaurantById() };
+       * Request 2 onload: function(){ request1Callback(); fetchRestaurantByCuisine(); }
+       */
+      this.xhr.onload = () => {
+        originalCallback();
+        this.fetchRestaurantsOnLoad(callback, this.xhr);
+      };
+      return;
+    }
+
+    this.xhr = new XMLHttpRequest();
+    this.xhr.open('GET', this.DATABASE_URL, true);
+    this.xhr.onload = () => {
+      this.fetchRestaurantsOnLoad(callback, this.xhr);
     };
-    xhr.send();
+    this.xhr.send();
+  }
+
+  fetchRestaurantsOnLoad(callback, xhr){
+    if (xhr.status === 200) { // Got a success response from server!
+      this.data = JSON.parse(xhr.responseText);
+      const restaurants = this.data.restaurants;
+      callback(null, restaurants);
+    } else { // Oops!. Got an error from server.
+      const error = (`Request failed. Returned status of ${xhr.status}`);
+      callback(error, null);
+    }
   }
 
   /**
    * Fetch a restaurant by its ID.
    */
-  static fetchRestaurantById(id, callback) {
+  fetchRestaurantById(id, callback) {
     // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -53,9 +84,9 @@ class DBHelper {
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
    */
-  static fetchRestaurantByCuisine(cuisine, callback) {
+  fetchRestaurantByCuisine(cuisine, callback) {
     // Fetch all restaurants  with proper error handling
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -69,9 +100,9 @@ class DBHelper {
   /**
    * Fetch restaurants by a neighborhood with proper error handling.
    */
-  static fetchRestaurantByNeighborhood(neighborhood, callback) {
+  fetchRestaurantByNeighborhood(neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -85,9 +116,9 @@ class DBHelper {
   /**
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
-  static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
+  fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -106,9 +137,9 @@ class DBHelper {
   /**
    * Fetch all neighborhoods with proper error handling.
    */
-  static fetchNeighborhoods(callback) {
+  fetchNeighborhoods(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -124,9 +155,9 @@ class DBHelper {
   /**
    * Fetch all cuisines with proper error handling.
    */
-  static fetchCuisines(callback) {
+  fetchCuisines(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -142,14 +173,14 @@ class DBHelper {
   /**
    * Restaurant page URL.
    */
-  static urlForRestaurant(restaurant) {
+  urlForRestaurant(restaurant) {
     return (`./restaurant.html?id=${restaurant.id}`);
   }
 
   /**
    * Restaurant image URL.
    */
-  static imageUrlForRestaurant(restaurant, size) {
+  imageUrlForRestaurant(restaurant, size) {
     var sizesSuffixes = {
       'large': '1600_large',
       'medium': '800_medium',
@@ -162,11 +193,11 @@ class DBHelper {
   /**
    * Map marker for a restaurant.
    */
-  static mapMarkerForRestaurant(restaurant, map) {
+  mapMarkerForRestaurant(restaurant, map) {
     const marker = new google.maps.Marker({
       position: restaurant.latlng,
       title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
+      url: this.urlForRestaurant(restaurant),
       map: map,
       animation: google.maps.Animation.DROP}
     );

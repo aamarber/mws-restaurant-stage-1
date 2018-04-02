@@ -13,6 +13,7 @@ module.exports = function(grunt) {
       dev: {
         options: {
           engine: 'im',
+          upscale: true,
           sizes: [{
             width: 1600,
             suffix: '_large',

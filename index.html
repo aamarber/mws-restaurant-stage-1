@@ -10,20 +10,20 @@
 </head>
 
 <body>
-  <header>
+  <header role="banner">
     <nav>
       <h1><a href="/">Restaurant Reviews</a></h1>
     </nav>
   </header>
 
-  <main class="maincontent">
+  <div class="maincontent">
     <section id="map-container">
       <div id="map" class="map"></div>
     </section>
-    <section>
+    <section role="complementary">
       <!-- TODO Make the filter collapsible and put an icon like a search icon that un-collapses it -->
-      <div class="filter-options">
-        <h2>Filter Results</h2>
+      <div class="filter-options" role="search">
+        <p>Filter Results</p>
         <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" aria-label="Select neighborhood">
           <option value="all">All Neighborhoods</option>
         </select>
@@ -31,7 +31,10 @@
           <option value="all">All Cuisines</option>
         </select>
       </div>
-      <ul id="restaurants-list" class="restaurants-list"></ul>
+    </section>
+    <section role="main">
+      <!-- As this section is going to be filled with js code, I've used aria-live to notify the screen reader -->
+      <ul id="restaurants-list" class="restaurants-list" aria-live="assertive"></ul>
     </section>
   </main>
 

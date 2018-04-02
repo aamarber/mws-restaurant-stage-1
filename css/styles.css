@@ -1,8 +1,11 @@
 @charset "utf-8";
 /* CSS Document */
 
+body, td, th, p, ul, li, h1, h2, h3, h4, h5, h6{
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 body,td,th,p{
-	font-family: Arial, Helvetica, sans-serif;
 	font-size: 1rem;
 	color: #333;
 	line-height: 1.5;
@@ -13,7 +16,6 @@ body {
 	position:relative;
 }
 ul, li {
-	font-family: Arial, Helvetica, sans-serif;
 	font-size: 1rem;
 	color: #333;
 }
@@ -29,7 +31,6 @@ a img{
 	border: none 0px #fff;
 }
 h1, h2, h3, h4, h5, h6 {
-  font-family: Arial, Helvetica, sans-serif;
   margin: 0 0 20px;
 }
 article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
@@ -50,7 +51,8 @@ footer {
   text-transform: uppercase;
 }
 
-button, select{
+/* Accesibility sizes for links and buttons */
+button, select, a {
   min-height: 36px;
   margin: 12px;
 }
@@ -123,13 +125,13 @@ nav h1 a {
   min-height: 50px;
   background-color: #3397DB;
   align-items: center;
+  padding-top: 1%;
 }
-.filter-options h2 {
+.filter-options p {
   color: white;
   font-size: 1rem;
   font-weight: normal;
   line-height: 1;
-  padding-top: 3%;
   padding-left: 5%;
   margin-bottom: 0;
 }
@@ -212,7 +214,7 @@ nav h1 a {
   border-bottom: 3px solid #eee;
   color: #fff;
   display: inline-block;
-  margin: 15px 0 0;
+  line-height: 2;
   padding: 8px 30px 10px;
   text-align: center;
   text-decoration: none;
