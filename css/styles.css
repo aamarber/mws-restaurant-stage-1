@@ -78,6 +78,10 @@ nav h1 a {
   text-transform: uppercase;
 }
 
+nav a:hover{
+  color: #f18200;
+}
+
 .breadcrumb {
     padding: 1% 5%;
     list-style: none;
@@ -177,7 +181,7 @@ nav h1 a {
   .restaurants-list li {
     margin: 1%;
     padding: 3%;
-    width: 40%;
+    width: 25%;
     display:inline-block;
     vertical-align: top;
   }

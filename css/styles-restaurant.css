@@ -4,17 +4,12 @@
   height: 87%;
   /* position: fixed; */
   right: 0;
-  top: 80px;
   width: 100%;
 }
 .inside .map {
   background-color: #ccc;
   min-height: 400px;
   width: 100%;
-}
-
-.maincontent{
-  padding-top: 1%;
 }
 
 .restaurant-container, .review{
@@ -25,19 +20,20 @@
 
 .restaurant-container {
   padding: 1% 5%;
+  margin-top: 1%;
   min-height: 380px;
   background-color: #fff;
   border-top-left-radius: 25px;
   border-bottom-right-radius: 25px;
   font-family: Arial,sans-serif;
-  text-align: center;    
+  text-align: center;
 }
-.reviews-container h2, .reviews-container h3{
+.reviews-container h3, .reviews-container h4{
   margin: 1%;
   width: 98%;
 }
 
-.reviews-container h2{
+.reviews-container h3{
   text-align: center;
   color: #f58500;
   font-size: 24pt;
@@ -121,14 +117,14 @@
   display: flex;
 }
 
-.review-header h2{
+.review-header h3{
   color:white;
   width: 40%;
   text-align: start;
   margin-left: 15%;
 }
 
-.review-header h3{
+.review-header h4{
   color: white;
   text-shadow: 3px -1px 8px black;
   margin-right: 15%;

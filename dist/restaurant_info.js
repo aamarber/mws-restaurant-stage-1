@@ -106,17 +106,17 @@ var fillRestaurantPicture = function fillRestaurantPicture(restaurant) {
   var image_large = document.createElement('source');
   image_large.setAttribute('media', '(min-width: 1000px)');
   image_large.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'large'));
-  image_large.setAttribute('alt', restaurant.name);
+  image_large.setAttribute('alt', 'Image of ' + restaurant.name);
 
   var image_medium = document.createElement('source');
   image_medium.setAttribute('media', '(min-width: 650px)');
   image_medium.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'medium'));
-  image_medium.setAttribute('alt', restaurant.name);
+  image_medium.setAttribute('alt', 'Image of ' + restaurant.name);
 
   var image = document.createElement('img');
   image.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
   image.setAttribute('src', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
-  image.setAttribute('alt', restaurant.name);
+  image.setAttribute('alt', 'Image of ' + restaurant.name);
 
   picture.appendChild(image_large);
   picture.appendChild(image_medium);
@@ -154,7 +154,7 @@ var fillReviewsHTML = function fillReviewsHTML() {
   var reviews = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : self.restaurant.reviews;
 
   var container = document.getElementById('reviews-container');
-  var title = document.createElement('h2');
+  var title = document.createElement('h3');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
 
@@ -190,11 +190,11 @@ var createReviewHTML = function createReviewHTML(review) {
   reviewHeader.className = 'review-header';
   reviewArticle.appendChild(reviewHeader);
 
-  var name = document.createElement('h2');
+  var name = document.createElement('h3');
   name.innerHTML = review.name;
   reviewHeader.appendChild(name);
 
-  var date = document.createElement('h3');
+  var date = document.createElement('h4');
   date.innerHTML = review.date;
   reviewHeader.appendChild(date);
 

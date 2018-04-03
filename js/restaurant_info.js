@@ -99,17 +99,17 @@ let fillRestaurantPicture = (restaurant) => {
   const image_large = document.createElement('source');
   image_large.setAttribute('media', '(min-width: 1000px)');
   image_large.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'large'));
-  image_large.setAttribute('alt', restaurant.name);
+  image_large.setAttribute('alt', `Image of ${restaurant.name}`);
 
   const image_medium = document.createElement('source');
   image_medium.setAttribute('media', '(min-width: 650px)');
   image_medium.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'medium'));
-  image_medium.setAttribute('alt', restaurant.name);
+  image_medium.setAttribute('alt', `Image of ${restaurant.name}`);
 
   const image = document.createElement('img');
   image.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
   image.setAttribute('src', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
-  image.setAttribute('alt', restaurant.name);
+  image.setAttribute('alt', `Image of ${restaurant.name}`);
 
   picture.appendChild(image_large);
   picture.appendChild(image_medium);
@@ -143,7 +143,7 @@ let fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours)
  */
 let fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h2');
+  const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
 
@@ -179,11 +179,11 @@ let createReviewHTML = (review) => {
   reviewHeader.className = 'review-header';
   reviewArticle.appendChild(reviewHeader);
 
-  const name = document.createElement('h2');
+  const name = document.createElement('h3');
   name.innerHTML = review.name;
   reviewHeader.appendChild(name);
 
-  const date = document.createElement('h3');
+  const date = document.createElement('h4');
   date.innerHTML = review.date;
   reviewHeader.appendChild(date);
 

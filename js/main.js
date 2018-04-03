@@ -152,10 +152,9 @@ let fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 let createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
-  //li.setAttribute("aria-current","page");
   appendRestaurantImage(restaurant, li);
   
-  const name = document.createElement('h1');
+  const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
   li.appendChild(name);
 
@@ -183,17 +182,17 @@ let appendRestaurantImage = (restaurant, rootElement) => {
   const image_large = document.createElement('source');
   image_large.setAttribute('media', '(min-width: 1000px)');
   image_large.setAttribute('srcset', `${dbHelper.imageUrlForRestaurant(restaurant, 'large')}`);
-  image_large.setAttribute('alt', restaurant.name);
+  image_large.setAttribute('alt', `Image of ${restaurant.name}`);
 
   const image_medium = document.createElement('source');
   image_medium.setAttribute('media', '(min-width: 650px) and (max-width: 999px)');
   image_medium.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'medium'));
-  image_medium.setAttribute('alt', restaurant.name);
+  image_medium.setAttribute('alt', `Image of ${restaurant.name}`);
 
   const image = document.createElement('img');
   image.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
   image.setAttribute('src', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
-  image.setAttribute('alt', restaurant.name);
+  image.setAttribute('alt', `Image of ${restaurant.name}`);
 
   picture.appendChild(image_large);
   picture.appendChild(image_medium);

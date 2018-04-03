@@ -16,22 +16,31 @@
   <!-- Beginning header -->
   <header role="banner">
     <!-- Beginning nav -->
-    <nav role="navigation">
-      <h1><a href="/">Restaurant Reviews</a></h1>
-    </nav>
     <!-- Beginning breadcrumb -->
-    <ul id="breadcrumb" class="breadcrumb" aria-label="Breadcrumb">
-      <li><a href="/">Home</a></li>
-    </ul>
+    <nav role="navigation" class="breadcrumb" aria-label="Breadcrumb">
+      <h1>
+        <a href="/">Restaurant Reviews</a>
+      </h1>
+      <ul id="breadcrumb">
+        <li>
+          <a href="/">Home</a>
+        </li>
+      </ul>
+    </nav>
     <!-- End breadcrumb -->
     <!-- End nav -->
   </header>
   <!-- End header -->
   <!-- Beginning main -->
   <main class="maincontent" role="main">
+    <!-- Beginning map -->
+    <section id="map-container" class="map-container">
+      <div id="map" class="map" role="application"></div>
+    </section>
+    <!-- End map -->
     <!-- Beginning restaurant -->
     <section id="restaurant-container" class="restaurant-container">
-      <h1 id="restaurant-name" class="restaurant-name"></h1>
+      <h2 id="restaurant-name" class="restaurant-name"></h2>
       <picture id="restaurant-img" class="restaurant-img"></picture>
       <p id="restaurant-cuisine" class="restaurant-cuisine"></p>
       <p id="restaurant-address" class="restaurant-address"></p>
@@ -41,18 +50,16 @@
     <!-- Beginning reviews -->
     <section id="reviews-container" class="reviews-container" aria-live="assertive">
     </section>
-    <!-- End reviews -->   
-    <!-- Beginning map -->
-    <section id="map-container" class="map-container">
-        <div id="map" class="map"></div>
-      </section>
-      <!-- End map -->
+    <!-- End reviews -->
   </main>
   <!-- End main -->
 
   <!-- Beginning footer -->
   <footer>
-    Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+    Copyright (c) 2017
+    <a href="/">
+      <strong>Restaurant Reviews</strong>
+    </a> All Rights Reserved.
   </footer>
   <!-- End footer -->
 
