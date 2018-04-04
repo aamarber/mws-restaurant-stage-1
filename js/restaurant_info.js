@@ -1,6 +1,6 @@
 let restaurant;
 var map;
-const dbHelper = new DBHelper();
+const dbHelper = new DBHelper(window.location.hostname, window.location.port);
 
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchRestaurantFromURL();

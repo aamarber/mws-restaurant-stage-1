@@ -8,11 +8,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * Common database helper functions.
  */
 var DBHelper = function () {
-  function DBHelper() {
+  function DBHelper(domain) {
     _classCallCheck(this, DBHelper);
 
     // The 'cache' of the restaurants json result
     this.data = '';
+    this.domain = domain || '127.0.0.1';
   }
 
   /**
@@ -267,7 +268,7 @@ var DBHelper = function () {
     key: 'DATABASE_URL',
     get: function get() {
       var port = 8887; // Change this to your server port
-      return 'http://127.0.0.1:' + port + '/data/restaurants.json';
+      return 'http://' + this.domain + ':' + port + '/data/restaurants.json';
     }
   }]);
 

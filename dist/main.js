@@ -5,7 +5,7 @@ var restaurants = void 0,
     cuisines = void 0;
 var map;
 var markers = [];
-var dbHelper = new DBHelper();
+var dbHelper = new DBHelper(window.location.hostname, window.location.port);
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.

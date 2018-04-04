@@ -2,7 +2,7 @@
 
 var restaurant = void 0;
 var map;
-var dbHelper = new DBHelper();
+var dbHelper = new DBHelper(window.location.hostname, window.location.port);
 
 document.addEventListener('DOMContentLoaded', function (event) {
   fetchRestaurantFromURL();

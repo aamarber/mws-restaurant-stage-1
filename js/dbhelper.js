@@ -2,9 +2,10 @@
  * Common database helper functions.
  */
 class DBHelper {
-  constructor(){
+  constructor(domain){
     // The 'cache' of the restaurants json result
     this.data = '';
+    this.domain = domain || '127.0.0.1';
   }
 
   /**
@@ -13,7 +14,7 @@ class DBHelper {
    */
   get DATABASE_URL() {
     const port = 8887 // Change this to your server port
-    return `http://127.0.0.1:${port}/data/restaurants.json`;
+    return `http://${this.domain}:${port}/data/restaurants.json`;
   }
 
   

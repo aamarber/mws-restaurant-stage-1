@@ -3,7 +3,7 @@ let restaurants,
   cuisines
 var map
 var markers = []
-const dbHelper = new DBHelper()
+const dbHelper = new DBHelper(window.location.hostname, window.location.port)
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
