@@ -2,10 +2,11 @@
  * Common database helper functions.
  */
 class DBHelper {
-  constructor(domain){
+  constructor(domain, port){
     // The 'cache' of the restaurants json result
     this.data = '';
     this.domain = domain || '127.0.0.1';
+    this.port = port || 8887;
   }
 
   /**
@@ -13,8 +14,7 @@ class DBHelper {
    * Change this to restaurants.json file location on your server.
    */
   get DATABASE_URL() {
-    const port = 8887 // Change this to your server port
-    return `http://${this.domain}:${port}/data/restaurants.json`;
+    return `http://${this.domain}${this.port ? `:${this.port}` : ''}/data/restaurants.json`;
   }
 
   

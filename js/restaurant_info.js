@@ -95,21 +95,21 @@ let fillRestaurantHTML = (restaurant = self.restaurant) => {
 let fillRestaurantPicture = (restaurant) => {
   const picture = document.getElementById('restaurant-img');
   picture.className = 'restaurant-img'
-
+  const altText = `Image of restaurant ${restaurant.name}`;
   const image_large = document.createElement('source');
   image_large.setAttribute('media', '(min-width: 1000px)');
   image_large.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'large'));
-  image_large.setAttribute('alt', `Image of ${restaurant.name}`);
+  image_large.setAttribute('alt', altText);
 
   const image_medium = document.createElement('source');
   image_medium.setAttribute('media', '(min-width: 650px)');
   image_medium.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'medium'));
-  image_medium.setAttribute('alt', `Image of ${restaurant.name}`);
+  image_medium.setAttribute('alt', altText);
 
   const image = document.createElement('img');
   image.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
   image.setAttribute('src', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
-  image.setAttribute('alt', `Image of ${restaurant.name}`);
+  image.setAttribute('alt', altText);
 
   picture.appendChild(image_large);
   picture.appendChild(image_medium);

@@ -102,21 +102,21 @@ var fillRestaurantHTML = function fillRestaurantHTML() {
 var fillRestaurantPicture = function fillRestaurantPicture(restaurant) {
   var picture = document.getElementById('restaurant-img');
   picture.className = 'restaurant-img';
-
+  var altText = 'Image of restaurant ' + restaurant.name;
   var image_large = document.createElement('source');
   image_large.setAttribute('media', '(min-width: 1000px)');
   image_large.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'large'));
-  image_large.setAttribute('alt', 'Image of ' + restaurant.name);
+  image_large.setAttribute('alt', altText);
 
   var image_medium = document.createElement('source');
   image_medium.setAttribute('media', '(min-width: 650px)');
   image_medium.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'medium'));
-  image_medium.setAttribute('alt', 'Image of ' + restaurant.name);
+  image_medium.setAttribute('alt', altText);
 
   var image = document.createElement('img');
   image.setAttribute('srcset', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
   image.setAttribute('src', dbHelper.imageUrlForRestaurant(restaurant, 'small'));
-  image.setAttribute('alt', 'Image of ' + restaurant.name);
+  image.setAttribute('alt', altText);
 
   picture.appendChild(image_large);
   picture.appendChild(image_medium);
