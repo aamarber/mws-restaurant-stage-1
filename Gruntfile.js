@@ -30,11 +30,6 @@ module.exports = function(grunt) {
             quality: 30
           }]
         },
-
-        /*
-        You don't need to change this part if you don't change
-        the directory structure.
-        */
         files: [{
           expand: true,
           src: ['*.{gif,jpg,png}'],
