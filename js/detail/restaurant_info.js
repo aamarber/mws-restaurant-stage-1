@@ -59,20 +59,22 @@ let fetchRestaurantFromURL = (callback) => {
     return;
   }
 
-  dbHelper.fetchRestaurantById(id, (error, restaurant) => {
-    if (!restaurant) {
-      console.error(error);
-      return;
-    }
+  dbHelper.fetchRestaurantById(id).then(
+    restaurant => {
+      self.restaurant = restaurant;
 
-    self.restaurant = restaurant;
-    
-    if (!callback) {
-      return;
-    }
+      if (!callback) {
+        return;
+      }
 
-    callback(null, restaurant);
-  });
+      callback(null, restaurant);
+    },
+    error => {
+      if (!restaurant) {
+        console.error(error);
+        callback(error);
+      }
+    });
 }
 
 /**

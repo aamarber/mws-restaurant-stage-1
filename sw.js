@@ -72,11 +72,6 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  // if (requestUrl.pathname.endsWith('.json')) {
-  //   event.respondWith(serveData(event.request));
-  //   return;
-  // }
-
   if (requestUrl.pathname.startsWith('/restaurant.html')) {
     event.respondWith(serveRestaurantContent(event.request));
     return;

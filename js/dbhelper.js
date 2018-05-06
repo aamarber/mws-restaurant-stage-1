@@ -6,6 +6,10 @@ class DBHelper {
     this.fetchOnGoing = null;
     this.domain = domain || '127.0.0.1';
     this.port = port || 8887;
+
+    this.dbPromise = idb.open('restaurants-store', 1, upgradeDB => {
+      upgradeDB.createObjectStore('restaurants');
+    });
   }
 
   /**
@@ -23,19 +27,35 @@ class DBHelper {
     return `http://${this.domain}${this.port ? `:${this.port}` : ''}/restaurants/${restaurantId}`;
   }
 
-  get restaurants(){
+  get restaurants() {
+    return this.dbPromise.then(db => {
+      return db.transaction('restaurants').objectStore('restaurants').getAll();
+    });
+
     return this._restaurants;
   }
 
-  set restaurants(restaurants){
+  set restaurants(restaurants) {
+    this.dbPromise.then(db => {
+      const transaction = db.transaction('restaurants', 'readwrite');
+
+      restaurants.forEach(restaurant => {
+        transaction.objectStore('restaurants').put(restaurant, restaurant.id);
+      })
+
+      return transaction.complete;
+    });
+
     this._restaurants = restaurants;
   }
 
-  get restaurant(){
-    return this._restaurant;
+  getRestaurant(id) {
+    return this.dbPromise.then(db => {
+      return db.transaction('restaurants').objectStore('restaurants').get(Number(id));
+    });
   }
 
-  set restaurant(restaurant){
+  set restaurant(restaurant) {
     this._restaurant = restaurant;
   }
 
@@ -43,30 +63,33 @@ class DBHelper {
    * Fetch all restaurants.
    */
   fetchRestaurants(callback) {
-    if (this.restaurants) {
-      return Promise.resolve(this.restaurants);
-    }
-    else if (this.fetchOnGoing) {
-      //To avoid making twice the restaurants request without passing through the cache
-      return this.fetchOnGoing.then(() => {
-        return this.fetchRestaurants(callback);
-      });
-    }
+    return this.restaurants.then(
+      restaurants => {
+        return restaurants;
+      },
+      error => {
+        if (this.fetchOnGoing) {
+          //To avoid making twice the restaurants request without passing through the cache
+          return this.fetchOnGoing.then(() => {
+            return this.fetchRestaurants(callback);
+          });
+        }
 
-    this.fetchOnGoing = fetch(this.restaurantsListUrl).then(result => {
-      if (result.status === 200) {
-        return result.json().then(restaurants => {
-          this.restaurants = restaurants;
-          return Promise.resolve(this.restaurants);
-          //callback(null, restaurants);
+        this.fetchOnGoing = fetch(this.restaurantsListUrl).then(result => {
+          if (result.status === 200) {
+            return result.json().then(restaurants => {
+              return Promise.resolve(restaurants);
+              //callback(null, restaurants);
+            });
+          } else { // Oops!. Got an error from server.
+            const error = (`Request failed. Returned status of ${result.status}`);
+            return Promise.reject(error);
+          }
         });
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${result.status}`);
-        return Promise.reject(error);
-      }
-    });
 
-    return this.fetchOnGoing;
+        return this.fetchOnGoing;
+      }
+    );
   }
 
   /**
@@ -75,21 +98,20 @@ class DBHelper {
    * @param {function} callback 
    */
   fetchRestaurantById(id, callback) {
-    if (this.restaurant) {
-      callback(null, this.restaurant);
-    }
-
-    return fetch(this.restaurantsDetailUrl(id)).then(result => {
-      if (result.status === 200) {
-        return result.json().then(restaurant => {
-          this.restaurant = restaurant;
-          callback(null, this.restaurant);
+    return this.getRestaurant(id).then(
+      restaurant => {
+        if (restaurant) {
+          return restaurant;
+        }
+        return fetch(this.restaurantsDetailUrl(id)).then(result => {
+          if (result.status === 200) {
+            return result.json();
+          }
+          else {
+            Promise.reject(error);
+          }
         });
-      }
-      else {
-        callback(error, null);
-      }
-    });
+      });
   }
 
   /**

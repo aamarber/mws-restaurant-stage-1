@@ -30,7 +30,7 @@ gulp.task('dist', [
 ]);
 
 gulp.task('scripts', function () {
-	gulp.src(['js/*.js'])
+	gulp.src(['js/*.js', 'node_modules/idb/lib/idb.js'])
 		.pipe(babel({
 			presets: ['env']
 		}))
