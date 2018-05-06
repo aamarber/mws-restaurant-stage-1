@@ -1,9 +1,11 @@
 let restaurant;
 var map;
-var dbHelper = new DBHelper(window.location.hostname, window.location.port);
+const dbHelper = new DBHelper('localhost', 1337)
 
 document.addEventListener('DOMContentLoaded', (event) => {
-  fetchRestaurantFromURL();
+  fetchRestaurantFromURL((error, restaurant) => {
+    fillRestaurantHTML();
+  });
   initServiceWorker();
 });
 
@@ -50,26 +52,27 @@ let fetchRestaurantFromURL = (callback) => {
   const id = getParameterByName('id');
   if (!id) { // no id found in URL
     const error = 'No restaurant id in URL'
-    if (!callback) { 
-      return error; 
+    if (!callback) {
+      return error;
     }
     callback(error, null);
-  } else {
-    dbHelper.fetchRestaurantById(id, (error, restaurant) => {
-      self.restaurant = restaurant;
-      if (!restaurant) {
-        console.error(error);
-        return;
-      }
-      fillRestaurantHTML();
-
-      if (!callback) {
-        return;
-      }
-
-      callback(null, restaurant)
-    });
+    return;
   }
+
+  dbHelper.fetchRestaurantById(id, (error, restaurant) => {
+    if (!restaurant) {
+      console.error(error);
+      return;
+    }
+
+    self.restaurant = restaurant;
+    
+    if (!callback) {
+      return;
+    }
+
+    callback(null, restaurant);
+  });
 }
 
 /**

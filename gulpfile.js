@@ -37,6 +37,12 @@ gulp.task('scripts', function () {
 		.pipe(concat('all.js'))
 		.pipe(gulp.dest('dist/js'));
 
+	gulp.src(['sw.js'])
+		.pipe(babel({
+			presets: ['env']
+		}))
+		.pipe(gulp.dest('dist'));
+
 	gulp.src(['js/list/*.js'])
 		.pipe(babel({
 			presets: ['env']
