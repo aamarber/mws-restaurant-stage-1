@@ -28,11 +28,22 @@ class DBHelper {
   }
 
   get restaurants() {
-    return this.dbPromise.then(db => {
-      return db.transaction('restaurants').objectStore('restaurants').getAll();
-    });
+    if (this._restaurants) {
+      return Promise.resolve(this._restaurants);
+    }
 
-    return this._restaurants;
+    return this.dbPromise.then(db => {
+      return db.transaction('restaurants').objectStore('restaurants').getAll().then(
+        restaurants => {
+          if (!restaurants || restaurants.length <= 0) {
+            return Promise.reject();
+          }
+
+          this._restaurants = restaurants;
+
+          return this._restaurants;
+        });
+    });
   }
 
   set restaurants(restaurants) {
@@ -62,7 +73,7 @@ class DBHelper {
   /**
    * Fetch all restaurants.
    */
-  fetchRestaurants(callback) {
+  fetchRestaurants() {
     return this.restaurants.then(
       restaurants => {
         return restaurants;
@@ -71,15 +82,15 @@ class DBHelper {
         if (this.fetchOnGoing) {
           //To avoid making twice the restaurants request without passing through the cache
           return this.fetchOnGoing.then(() => {
-            return this.fetchRestaurants(callback);
+            return this.fetchRestaurants();
           });
         }
 
         this.fetchOnGoing = fetch(this.restaurantsListUrl).then(result => {
           if (result.status === 200) {
             return result.json().then(restaurants => {
-              return Promise.resolve(restaurants);
-              //callback(null, restaurants);
+              this.restaurants = restaurants;
+              return restaurants;
             });
           } else { // Oops!. Got an error from server.
             const error = (`Request failed. Returned status of ${result.status}`);
@@ -149,57 +160,65 @@ class DBHelper {
   /**
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
-  fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
+  fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood) {
     // Fetch all restaurants
-    this.fetchRestaurants().then(
+    return this.fetchRestaurants().then(
       restaurants => {
-        let results = restaurants
+        if (cuisine === 'all' && neighborhood === 'all') {
+          return this.restaurants;
+        }
+
         if (cuisine != 'all') { // filter by cuisine
-          results = results.filter(r => r.cuisine_type == cuisine);
+          return restaurants.filter(r => r.cuisine_type == cuisine);
         }
         if (neighborhood != 'all') { // filter by neighborhood
-          results = results.filter(r => r.neighborhood == neighborhood);
+          return restaurants.filter(r => r.neighborhood == neighborhood);
         }
-        callback(null, results);
-      },
-      error => {
-        callback(error, null);
+        return restaurants;
       });
   }
 
   /**
    * Fetch all neighborhoods with proper error handling.
    */
-  fetchNeighborhoods(callback) {
+  fetchNeighborhoods(existingRestaurants) {
+    const getNeighborhoods = (restaurants) => {
+      // Get all neighborhoods from all restaurants
+      const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood)
+      // Remove duplicates from neighborhoods
+      return neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
+    }
+
+    if (existingRestaurants) {
+      return Promise.resolve(getNeighborhoods(existingRestaurants));
+    }
+
     // Fetch all restaurants
-    this.fetchRestaurants().then(
+    return this.fetchRestaurants().then(
       restaurants => {
-        // Get all neighborhoods from all restaurants
-        const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood)
-        // Remove duplicates from neighborhoods
-        const uniqueNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i)
-        callback(null, uniqueNeighborhoods);
-      },
-      error => {
-        callback(error, null);
+        return getNeighborhoods(restaurants);
       });
   }
 
   /**
    * Fetch all cuisines with proper error handling.
    */
-  fetchCuisines(callback) {
+  fetchCuisines(existingRestaurants) {
+    const getCuisines = (restaurants) => {
+      // Get all cuisines from all restaurants
+      const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type)
+      // Remove duplicates from cuisines
+      return cuisines.filter((v, i) => cuisines.indexOf(v) == i)
+    }
+
+    if (existingRestaurants) {
+      return Promise.resolve(getCuisines(existingRestaurants));
+    }
+
     // Fetch all restaurants
-    this.fetchRestaurants().then(
+    return this.fetchRestaurants().then(
       restaurants => {
-        // Get all cuisines from all restaurants
-        const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type)
-        // Remove duplicates from cuisines
-        const uniqueCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i)
-        callback(null, uniqueCuisines);
-      },
-      error => {
-        callback(error, null);
+        return getCuisines(restaurants);
       });
   }
 

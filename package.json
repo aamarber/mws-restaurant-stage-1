@@ -24,7 +24,8 @@
     "gulp-eslint": "^4.0.2",
     "gulp-sass": "^4.0.1",
     "gulp-uglify": "^3.0.0",
-    "idb": "^2.1.1"
+    "idb": "^2.1.1",
+    "gulp-style-inject": "^0.1.1"
   },
   "dependencies": {
     "grunt-responsive-images": "^0.1.6"
