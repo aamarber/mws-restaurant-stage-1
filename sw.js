@@ -1,4 +1,4 @@
-var jsFolder = 'dist';
+var jsFolder = 'js';
 var staticCache = 'restaurant-statics-v1';
 var imagesCache = 'restaurant-reviews-imgs-v1';
 var jsonDataCache = 'restaurant-data-v1';
@@ -16,9 +16,9 @@ self.addEventListener('install', function (event) {
       return cache.addAll([
         '/index.html',
         '/restaurant.html',
-        `/${jsFolder}/main.js`,
-        `/${jsFolder}/dbhelper.js`,
-        `/${jsFolder}/restaurant_info.js`,
+        `/${jsFolder}/all.js`,
+        `/${jsFolder}/detail.js`,
+        `/${jsFolder}/list.js`,
         '/css/styles-restaurant.css',
         '/css/styles.css'
       ]);
@@ -69,11 +69,6 @@ self.addEventListener('fetch', function (event) {
 
   if (requestUrl.pathname.startsWith('/img/')) {
     event.respondWith(serveImage(event.request));
-    return;
-  }
-
-  if (requestUrl.pathname.endsWith('.json')) {
-    event.respondWith(serveData(event.request));
     return;
   }
 
