@@ -134,7 +134,7 @@ gulp.task('scripts-dist', function () {
 });
 
 gulp.task('copy-html', function () {
-	gulp.src('./*.html')
+	gulp.src('/*.html')
 		.pipe(styleInject())
 		.pipe(gulp.dest('./dist'));
 });
