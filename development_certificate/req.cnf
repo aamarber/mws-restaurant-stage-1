@@ -1,0 +1,20 @@
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+[req_distinguished_name]
+C = US
+ST = VA
+L = SomeCity
+O = MyCompany
+OU = MyDivision
+CN = localhost
+[v3_req]
+keyUsage = critical, digitalSignature, keyAgreement
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = localhost
+
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -sha256 -subj '/CN=my-domain.com/subjectAltName=DNS.1=192.168.0.222/' -keyout my-domain.key -out my-domain.crt
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -sha256 -subj /CN=localhost/subjectAltName=IP.1=127.0.0.1/ -keyout localhost.key -out localhost.crt

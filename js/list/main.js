@@ -16,9 +16,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 let initRestaurants = () => {
-  updateRestaurants().then((restaurants) => {
-    initLazyLoading();
-  });
+  updateRestaurants();
 
   fetchNeighborhoods();
   fetchCuisines();
@@ -116,10 +114,28 @@ let initServiceWorker = () => {
 }
 
 
+let toggleMap = () => {
+  if (!mapIsEnabled()) {
+    document.getElementById('map').style.display = 'block';
+    initMap();
+  }
+  else { 
+    document.getElementById('map').style.display = 'none';
+  }
+}
+
+const mapIsEnabled = () => {
+  return document.getElementById('map').style.display !== 'none';
+}
+
 /**
  * Initialize Google map, called from HTML.
  */
 let initMap = () => {
+  if(!mapIsEnabled()){
+    return;
+  }
+
   window.setTimeout(() => {
     let loc = {
       lat: 40.722216,
@@ -196,6 +212,12 @@ let fillRestaurantsHTML = (restaurants) => {
   restaurants.forEach(restaurant => {
     ul.appendChild(createRestaurantHTML(restaurant));
   });
+
+  initLazyLoading();
+
+  if(mapIsEnabled()){
+    initMap();
+  }
 }
 
 /**

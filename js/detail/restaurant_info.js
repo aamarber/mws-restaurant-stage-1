@@ -1,13 +1,44 @@
 let restaurant;
 var map;
 const dbHelper = new DBHelper('localhost', 1337)
+const imageSizes = {
+  'medium': 999,
+  'small': 649,
+  'large': 0
+}
+
 
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchRestaurantFromURL((error, restaurant) => {
     fillRestaurantHTML();
+    initLazyLoading();
   });
   initServiceWorker();
 });
+
+let initLazyLoading = () => {
+  let breakpoints = [];
+
+  for (var size in imageSizes) {
+    if (!imageSizes[size]) {
+      continue;
+    }
+
+    breakpoints.push({
+      width: imageSizes[size], // max-width
+      src: `data-src-${size}`
+    });
+  }
+  if (!Blazy) {
+    window.setTimeout(() => {
+      initLazyLoading();
+    }, 100);
+    return;
+  }
+  var bLazy = new Blazy({
+    breakpoints: breakpoints
+  });
+}
 
 let initServiceWorker = () => {
   if ('serviceWorker' in navigator) {

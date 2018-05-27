@@ -3,6 +3,7 @@
 /* COLORS */
 $color-light-white: #fff;
 $color-orange: #c41c00;
+$brand-color: #77140d;
 
 
 /* CSS Document */
@@ -25,12 +26,19 @@ body {
 	position:relative;
 }
 
+button{
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  vertical-align: middle;
+}
+
 a {
 	color: orange;
 	text-decoration: none;
 }
 a:hover, a:focus {
-	color: #3397db;
+	color: $brand-color;
 	text-decoration: none;
 }
 a img{
@@ -48,7 +56,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 
 footer {
-  background-color: #444;
+  background-color: $brand-color;
   color: #aaa;
   font-size: 8pt;
   letter-spacing: 1px;
@@ -99,7 +107,7 @@ nav a:hover{
     font-size: 17pt;
     margin: 0;
     width: 90%;
-    background-color: #3397DB;
+    background-color: $brand-color;
     align-items: center;
 }
 
@@ -137,7 +145,7 @@ nav a:hover{
 .filter-options {
   width: 100%;
   min-height: 50px;
-  background-color: #3397DB;
+  background-color: $brand-color;
   align-items: center;
   padding-top: 1%;
 }
