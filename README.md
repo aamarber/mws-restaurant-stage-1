@@ -15,6 +15,8 @@ node server
 
 On the root folder, run:
 
+npm install gulp
+
 npm i
 
 gulp dist
