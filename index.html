@@ -5,24 +5,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <!-- <link rel="stylesheet" href="css/styles.css"> -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#77140d" />
   <!-- inject-style src="./dist/css/styles.css" -->
+
   <title>Restaurant Reviews</title>
 </head>
 
 <body>
   <header role="banner">
     <nav>
-      <h1><a href="/">Restaurant Reviews</a></h1>
+      <h1>
+        <a href="/">Restaurant Reviews</a>
+      </h1>
     </nav>
   </header>
-
   <div class="maincontent">
     <section id="map-container">
-      <div id="map" class="map" role="application"></div>
+      <div id="map" class="map" role="application" style="display:none"></div>
     </section>
     <section role="complementary">
-      <!-- TODO Make the filter collapsible and put an icon like a search icon that un-collapses it -->
       <div class="filter-options" role="search">
         <p>Filter Results</p>
         <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" aria-label="Select neighborhood">
@@ -31,28 +33,41 @@
         <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" aria-label="Select cuisine type">
           <option value="all">All Cuisines</option>
         </select>
+        <button onclick="toggleMap()" title="Show restaurants on a map">
+          <img alt="Map" class="btn_toggle" src="./icons/icon-map.svg" width="30" height="30">
+          </img>
+        </button>
       </div>
     </section>
     <section role="main">
+      <noscript>
+        <!-- anchor linking to external file -->
+        <h1>We're very sorry...</h1>
+        <p>But javascript is not available. It's imperative that it works so the page works</p>
+      </noscript>
       <!-- As this section is going to be filled with js code, I've used aria-live to notify the screen reader -->
       <ul id="restaurants-list" class="restaurants-list" aria-live="assertive"></ul>
     </section>
-  </main>
-  <footer>
-    Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
-  </footer>
+    </main>
+    <footer>
+      Copyright (c) 2017
+      <a href="/">
+        <strong>Restaurant Reviews</strong>
+      </a> All Rights Reserved.
+    </footer>
 
 </body>
 <script>
   window.lazyLoadOptions = {
-      /* your lazyload options */
+    /* your lazyload options */
   };
-  </script>
-  
-  <script async defer src="/js/blazy.min.js"></script>
-  <script src="/js/dbhelper.js"></script>
-  <script src="/js/idb.js"></script>
-  <script src="/js/list.js"></script>
+</script>
 
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGsSWsuyjgHVk61MPjDWs-ejcCS-Rgfuc&libraries=places&callback=initMap"></script>
+<script async defer src="/js/blazy.min.js"></script>
+<script src="/js/dbhelper.js"></script>
+<script src="/js/idb.js"></script>
+<script src="/js/list.js"></script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGsSWsuyjgHVk61MPjDWs-ejcCS-Rgfuc&libraries=places&callback=initMap"></script>
+
 </html>

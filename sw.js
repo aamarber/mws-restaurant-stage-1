@@ -53,8 +53,10 @@ self.addEventListener('fetch', function (event) {
   if (requestUrl.origin !== location.origin || requestUrl.pathname.indexOf('sw.js') !== -1) {
     return;
   }
+
   if (requestUrl.pathname === '/') {
     event.respondWith(serveContent(event.request, '/index.html', staticCache));
+    return;
   }
 
   if (requestUrl.pathname.startsWith('/css')) {
@@ -76,8 +78,6 @@ self.addEventListener('fetch', function (event) {
     event.respondWith(serveRestaurantContent(event.request));
     return;
   }
-
-  console.log(requestUrl);
 });
 
 function serveStaticContent(request) {
