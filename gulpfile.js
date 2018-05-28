@@ -27,9 +27,9 @@ gulp.task('default', ['styles', 'copy-html', 'copy-images', 'scripts'], function
 
 gulp.task('dist', [
 	'styles',
-	'copy-html',
 	'copy-images',
-	'scripts-dist'
+	'scripts-dist',
+	'copy-html'
 ], function () {
 	browserSync.init({
 		server: './dist',
@@ -80,7 +80,7 @@ gulp.task('scripts', function () {
 	gulp.src(['manifest.json'])
 		.pipe(gulp.dest('dist'));
 
-	gulp.src(['icons/'])
+	return gulp.src(['icons/'])
 		.pipe(gulp.dest('dist/icons'));
 });
 
@@ -129,26 +129,26 @@ gulp.task('scripts-dist', function () {
 		.pipe(concat('detail.js'))
 		.pipe(gulp.dest('dist/js'));
 
-	gulp.src(['manifest.json'])
+	return gulp.src(['manifest.json'])
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('copy-html', function () {
-	gulp.src('/*.html')
+gulp.task('copy-html', ['styles'], function () {
+	return gulp.src(['index.html', 'restaurant.html'])
 		.pipe(styleInject())
 		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('copy-images', function () {
-	gulp.src('img/*')
+	 gulp.src('img/*')
 		.pipe(gulp.dest('dist/img'));
 
-	gulp.src(['icons/*'])
+	return gulp.src(['icons/*'])
 		.pipe(gulp.dest('dist/icons'));
 });
 
 gulp.task('styles', function () {
-	gulp.src('styles/**/*.scss')
+	return gulp.src('styles/**/*.scss')
 		.pipe(sass({
 			outputStyle: 'compressed'
 		}).on('error', sass.logError))
