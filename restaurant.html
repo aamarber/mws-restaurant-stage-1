@@ -7,8 +7,8 @@
   <!-- Normalize.css for better cross-browser consistency -->
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <!-- Main CSS file -->
-  <link rel="stylesheet" href="css/styles.css" type="text/css">
-  <link rel="stylesheet" href="css/styles-restaurant.css" type="text/css">
+  <!-- inject-style src="./dist/css/styles.css" -->
+  <!-- inject-style src="./dist/css/styles-restaurant.css" -->
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#77140d" />
   <title>Restaurant Info</title>
@@ -35,14 +35,24 @@
   <!-- End header -->
   <!-- Beginning main -->
   <main class="maincontent" role="main">
+    <noscript>
+      <!-- anchor linking to external file -->
+      <h1>We're very sorry...</h1>
+      <p>But javascript is not available. It's imperative that it works so the page works</p>
+    </noscript>
     <!-- Beginning map -->
     <section id="map-container" class="map-container">
-      <div id="map" class="map" role="application"></div>
+      <div id="map" class="map" role="application" style="display:none"></div>
     </section>
     <!-- End map -->
     <!-- Beginning restaurant -->
     <section id="restaurant-container" class="restaurant-container">
-      <h2 id="restaurant-name" class="restaurant-name"></h2>
+      <h2 id="restaurant-name" class="restaurant-name">
+        <button onclick="toggleMap()" title="Show restaurants on a map">
+          <img alt="Map" class="btn_toggle" src="./icons/icon-map-black.svg" width="30" height="30">
+          </img>
+        </button>
+      </h2>
       <picture id="restaurant-img" class="restaurant-img"></picture>
       <p id="restaurant-cuisine" class="restaurant-cuisine"></p>
       <p id="restaurant-address" class="restaurant-address"></p>
@@ -67,7 +77,8 @@
 
   <!-- Beginning scripts -->
   <script async defer src="/js/blazy.min.js"></script>
-  <script type="application/javascript" charset="utf-8" src="/js/all.js"></script>
+  <script src="/js/dbhelper.js"></script>
+  <script src="/js/idb.js"></script>
   <script type="application/javascript" charset="utf-8" src="/js/detail.js"></script>
   <!-- Google Maps -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGsSWsuyjgHVk61MPjDWs-ejcCS-Rgfuc&libraries=places&callback=initMap"></script>

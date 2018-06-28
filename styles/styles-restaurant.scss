@@ -1,3 +1,5 @@
+$color-orange: #c41c00;
+
 /* ====================== Restaurant Details ====================== */
 .inside .map-container {
   background: blue none repeat scroll 0 0;
@@ -35,7 +37,7 @@
 
 .reviews-container h3{
   text-align: center;
-  color: #f58500;
+  color: $color-orange;
   font-size: 24pt;
   font-weight: 300;
   letter-spacing: -1px;
@@ -43,7 +45,7 @@
 }
 
 .restaurant-name {
-  color: #f18200;
+  color: $color-orange;
   font-family: Arial,sans-serif;
   font-size: 20pt;
   font-weight: 200;
@@ -159,3 +161,6 @@
   padding: 0.5em;
 }
   
+.btn_toggle{
+  fill: black;
+}

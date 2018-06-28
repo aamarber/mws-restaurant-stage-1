@@ -62,7 +62,7 @@ gulp.task('scripts', function () {
 	gulp.src(['js/*.min.js'])
 		.pipe(gulp.dest('dist/js'));
 
-	gulp.src(['js/list/*.js', 'js/pwa.js'])
+	gulp.src(['js/list/*.js', 'js/pwa.js', 'js/common.js'])
 		.pipe(concat('list.js'))
 		.pipe(babel({
 			presets: ['env'],
@@ -70,7 +70,7 @@ gulp.task('scripts', function () {
 		}))
 		.pipe(gulp.dest('dist/js'));
 
-	gulp.src(['js/*.js', 'node_modules/idb/lib/idb.js', 'js/detail/*.js'])
+	gulp.src(['js/detail/*.js', 'js/pwa.js', 'js/common.js'])
 		.pipe(concat('detail.js'))
 		.pipe(babel({
 			presets: ['env']
@@ -111,7 +111,7 @@ gulp.task('scripts-dist', function () {
 		.pipe(uglify())
 		.pipe(gulp.dest('dist/js'));
 
-	gulp.src(['js/list/*.js', 'js/pwa.js'])
+		gulp.src(['js/detail/*.js', 'js/pwa.js', 'js/common.js'])
 		.pipe(concat('list.js'))
 		.pipe(babel({
 			presets: ['env'],
@@ -120,7 +120,7 @@ gulp.task('scripts-dist', function () {
 		.pipe(uglify())
 		.pipe(gulp.dest('dist/js'));
 
-	gulp.src(['js/*.js', 'node_modules/idb/lib/idb.js', 'js/detail/*.js'])
+		gulp.src(['js/detail/*.js', 'js/pwa.js', 'js/common.js'])
 		.pipe(babel({
 			presets: ['env'],
 			ignore: '**/*.min.js'

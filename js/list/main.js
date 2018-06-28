@@ -1,12 +1,4 @@
-const dbHelper = new DBHelper('localhost', 1337);
-
 let restaurantsCached = null;
-
-const imageSizes = {
-  'medium': 999,
-  'small': 649,
-  'large': 0
-}
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -22,30 +14,6 @@ let initRestaurants = () => {
   fetchCuisines();
 
   initServiceWorker();
-}
-
-let initLazyLoading = () => {
-  let breakpoints = [];
-
-  for (var size in imageSizes) {
-    if (!imageSizes[size]) {
-      continue;
-    }
-
-    breakpoints.push({
-      width: imageSizes[size], // max-width
-      src: `data-src-${size}`
-    });
-  }
-  if (!Blazy) {
-    window.setTimeout(() => {
-      initLazyLoading();
-    }, 100);
-    return;
-  }
-  var bLazy = new Blazy({
-    breakpoints: breakpoints
-  });
 }
 
 /**
@@ -101,31 +69,6 @@ let fillCuisinesHTML = (cuisines = self.cuisines) => {
     option.value = cuisine;
     select.appendChild(option);
   });
-}
-
-let initServiceWorker = () => {
-  if (!('serviceWorker' in navigator)) {
-    return;
-  }
-
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/sw.js');
-  });
-}
-
-
-let toggleMap = () => {
-  if (!mapIsEnabled()) {
-    document.getElementById('map').style.display = 'block';
-    initMap();
-  }
-  else { 
-    document.getElementById('map').style.display = 'none';
-  }
-}
-
-const mapIsEnabled = () => {
-  return document.getElementById('map').style.display !== 'none';
 }
 
 /**

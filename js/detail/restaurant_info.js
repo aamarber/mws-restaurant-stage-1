@@ -1,109 +1,53 @@
 let restaurant;
 var map;
-const dbHelper = new DBHelper('localhost', 1337)
-const imageSizes = {
-  'medium': 999,
-  'small': 649,
-  'large': 0
-}
 
 
 document.addEventListener('DOMContentLoaded', (event) => {
-  fetchRestaurantFromURL((error, restaurant) => {
+  fetchRestaurantFromURL().then(restaurant => {
     fillRestaurantHTML();
     initLazyLoading();
   });
   initServiceWorker();
 });
 
-let initLazyLoading = () => {
-  let breakpoints = [];
-
-  for (var size in imageSizes) {
-    if (!imageSizes[size]) {
-      continue;
-    }
-
-    breakpoints.push({
-      width: imageSizes[size], // max-width
-      src: `data-src-${size}`
-    });
-  }
-  if (!Blazy) {
-    window.setTimeout(() => {
-      initLazyLoading();
-    }, 100);
-    return;
-  }
-  var bLazy = new Blazy({
-    breakpoints: breakpoints
-  });
-}
-
-let initServiceWorker = () => {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register('/sw.js').then(function (registration) {
-        // Registration was successful
-        //console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      }).catch(function (err) {
-        // registration failed :(
-      });
-    });
-  }
-}
-
 /**
  * Initialize Google map, called from HTML.
  */
 let initMap = () => {
-  fetchRestaurantFromURL((error, restaurant) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: restaurant.latlng,
-        scrollwheel: false
-      });
-      fillBreadcrumb();
-      dbHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-    }
+  fetchRestaurantFromURL().then(restaurant => {
+    self.map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 16,
+      center: restaurant.latlng,
+      scrollwheel: false
+    });
+    fillBreadcrumb();
+    dbHelper.mapMarkerForRestaurant(self.restaurant, self.map);
   });
 }
 
 /**
  * Get current restaurant from page URL.
  */
-let fetchRestaurantFromURL = (callback) => {
+let fetchRestaurantFromURL = () => {
   if (self.restaurant) { // restaurant already fetched!
-    callback(null, self.restaurant)
-    return;
+    return Promise.resolve(self.restaurant);
   }
   const id = getParameterByName('id');
   if (!id) { // no id found in URL
     const error = 'No restaurant id in URL'
-    if (!callback) {
-      return error;
-    }
-    callback(error, null);
-    return;
+    return Promise.reject(error);
   }
 
-  dbHelper.fetchRestaurantById(id).then(
+  return dbHelper.fetchRestaurantById(id).then(
     restaurant => {
       self.restaurant = restaurant;
 
-      if (!callback) {
-        return;
-      }
-
-      callback(null, restaurant);
+      return restaurant;
     },
     error => {
       if (!restaurant) {
         console.error(error);
-        callback(error);
+        return error;
       }
     });
 }
@@ -113,7 +57,9 @@ let fetchRestaurantFromURL = (callback) => {
  */
 let fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
-  name.innerHTML = restaurant.name;
+  const restaurantName = document.createElement('span');
+  restaurantName.innerText = restaurant.name;
+  name.appendChild(restaurantName);
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
