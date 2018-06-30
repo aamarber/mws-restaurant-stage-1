@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     fillRestaurantHTML(restaurant);
     initLazyLoading();
   });
+
+  fetchRestaurantReviewsFromURL().then(reviews => {
+    fillReviewsHTML(reviews);
+  });
+  
+
   initServiceWorker();
 });
 
@@ -53,6 +59,33 @@ let fetchRestaurantFromURL = () => {
 }
 
 /**
+ * Get current restaurant reviews from page URL.
+ */
+let fetchRestaurantReviewsFromURL = () => {
+  if (self.reviews) { // restaurant already fetched!
+    return Promise.resolve(self.restaurant);
+  }
+  const id = getParameterByName('id');
+  if (!id) { // no id found in URL
+    const error = 'No restaurant id in URL'
+    return Promise.reject(error);
+  }
+
+  return dbHelper.fetchReviews(id).then(
+    reviews => {
+      self.reviews = reviews;
+
+      return reviews;
+    },
+    error => {
+      if (!reviews) {
+        console.error(error);
+        return error;
+      }
+    });
+}
+
+/**
  * Create restaurant HTML and add it to the webpage
  */
 let fillRestaurantHTML = (restaurant) => {
@@ -76,8 +109,6 @@ let fillRestaurantHTML = (restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
-  // fill reviews
-  fillReviewsHTML();
 }
 
 let fillRestaurantPicture = (restaurant) => {
