@@ -94,6 +94,8 @@ nav h1 a {
   font-weight: 200;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  display: block;
+   text-align: center;
 }
 
 nav a:hover{
@@ -116,6 +118,8 @@ nav a:hover{
 .breadcrumb li {
     display: inline;
     color:white;
+    display: inline-block;
+    text-align: center;
 }
 
 /* Add a slash symbol (/) before/behind each list item */

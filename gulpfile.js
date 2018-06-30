@@ -111,7 +111,7 @@ gulp.task('scripts-dist', function () {
 		.pipe(uglify())
 		.pipe(gulp.dest('dist/js'));
 
-		gulp.src(['js/detail/*.js', 'js/pwa.js', 'js/common.js'])
+		gulp.src(['js/list/*.js', 'js/pwa.js', 'js/common.js'])
 		.pipe(concat('list.js'))
 		.pipe(babel({
 			presets: ['env'],

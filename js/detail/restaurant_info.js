@@ -4,7 +4,7 @@ var map;
 
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchRestaurantFromURL().then(restaurant => {
-    fillRestaurantHTML();
+    fillRestaurantHTML(restaurant);
     initLazyLoading();
   });
   initServiceWorker();
@@ -55,11 +55,14 @@ let fetchRestaurantFromURL = () => {
 /**
  * Create restaurant HTML and add it to the webpage
  */
-let fillRestaurantHTML = (restaurant = self.restaurant) => {
+let fillRestaurantHTML = (restaurant) => {
   const name = document.getElementById('restaurant-name');
+  const mapToggler = document.getElementById('mapToggler');
+
   const restaurantName = document.createElement('span');
   restaurantName.innerText = restaurant.name;
-  name.appendChild(restaurantName);
+
+  name.insertBefore(restaurantName, mapToggler);
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
@@ -126,7 +129,7 @@ let fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours)
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-let fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+let fillReviewsHTML = (reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
