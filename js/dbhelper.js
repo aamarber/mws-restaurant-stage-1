@@ -2,29 +2,15 @@
  * Common database helper functions.
  */
 class DBHelper {
-  constructor(domain, port) {
+  constructor(domain, port, protocol) {
     this.fetchOnGoing = null;
     this.domain = domain || '127.0.0.1';
     this.port = port || 8887;
+    this.protocol = protocol || 'http';
 
     this.dbPromise = idb.open('restaurants-store', 1, upgradeDB => {
       upgradeDB.createObjectStore('restaurants');
     });
-  }
-
-  /**
-   * The url to get the list of restaurants
-   */
-  get restaurantsListUrl() {
-    return `http://${this.domain}${this.port ? `:${this.port}` : ''}/restaurants`;
-  }
-
-  /**
-   * The url to get the detail of a restaurant
-   * @param {number} restaurantId 
-   */
-  restaurantsDetailUrl(restaurantId) {
-    return `http://${this.domain}${this.port ? `:${this.port}` : ''}/restaurants/${restaurantId}`;
   }
 
   get restaurants() {
@@ -223,8 +209,54 @@ class DBHelper {
   }
 
   /**
-   * Restaurant page URL.
+   * Fetch a restaurant reviews by the restaurant ID.
+   * @param {number} id 
+   * @param {function} callback 
    */
+  fetchReviews(restaurantId) {
+    return fetch(this.urlForRestaurantReviews(restaurantId)).then(result => {
+      if (result.status === 200) {
+        return result.json();
+      }
+      else {
+        Promise.reject(error);
+      }
+    });
+  }
+
+  /**
+   * Map marker for a restaurant.
+   */
+  mapMarkerForRestaurant(restaurant, map) {
+    const marker = new google.maps.Marker({
+      position: restaurant.latlng,
+      title: restaurant.name,
+      url: this.urlForRestaurant(restaurant),
+      map: map,
+      animation: google.maps.Animation.DROP
+    }
+    );
+    return marker;
+  }
+
+  /**
+ * The url to get the list of restaurants
+ */
+  get restaurantsListUrl() {
+    return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/restaurants`;
+  }
+
+  /**
+   * The url to get the detail of a restaurant
+   * @param {number} restaurantId 
+   */
+  restaurantsDetailUrl(restaurantId) {
+    return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/restaurants/${restaurantId}`;
+  }
+
+  /**
+ * Restaurant page URL.
+ */
   urlForRestaurant(restaurant) {
     return (`./restaurant.html?id=${restaurant.id}`);
   }
@@ -242,19 +274,11 @@ class DBHelper {
     return (`/img/${restaurant.id}-${sizesSuffixes[size]}.jpg`);
   }
 
-  /**
-   * Map marker for a restaurant.
-   */
-  mapMarkerForRestaurant(restaurant, map) {
-    const marker = new google.maps.Marker({
-      position: restaurant.latlng,
-      title: restaurant.name,
-      url: this.urlForRestaurant(restaurant),
-      map: map,
-      animation: google.maps.Animation.DROP
-    }
-    );
-    return marker;
-  }
+    /**
+ * Restaurant reviews URL.
+ */
+urlForRestaurantReviews(restaurantId) {
+  return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/reviews/?restaurant_id=${restaurantId}`;
+}
 
 }
