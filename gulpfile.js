@@ -11,7 +11,7 @@ const babel = require('gulp-babel');
 var styleInject = require("gulp-style-inject");
 
 gulp.task('default', ['styles', 'copy-html', 'copy-images', 'scripts'], function () {
-	gulp.watch('styles/**/*.scss', ['styles']);
+	gulp.watch('styles/**/*.scss', ['styles', 'copy-html']);
 	gulp.watch('js/**/*.js', ['scripts']);
 	gulp.watch('./*.html', ['copy-html']);
 	gulp.watch('./dist/index.html').on('change', browserSync.reload);
@@ -59,6 +59,9 @@ gulp.task('scripts', function () {
 		}))
 		.pipe(gulp.dest('dist/js'));
 
+	gulp.src(['node_modules/moment/min/moment.min.js'])
+		.pipe(gulp.dest('dist/js'));
+
 	gulp.src(['js/*.min.js'])
 		.pipe(gulp.dest('dist/js'));
 
@@ -93,25 +96,24 @@ gulp.task('scripts-dist', function () {
 		.pipe(uglify())
 		.pipe(gulp.dest('dist'));
 
-	gulp.src(['js/dbhelper.js'])
+
+	gulp.src(['node_modules/idb/lib/idb.js', 'js/dbhelper.js', 'js/pwa.js', 'js/common.js'])
 		.pipe(babel({
 			presets: ['env']
 		}))
 		.pipe(uglify())
+		.pipe(concat('libs.js'))
 		.pipe(gulp.dest('dist/js'));
 
-	gulp.src(['node_modules/idb/lib/idb.js'])
-		.pipe(babel({
-			presets: ['env']
-		}))
+	gulp.src(['js/*.min.js', 'node_modules/moment/min/moment.min.js'])
 		.pipe(uglify())
+		.pipe(concat('external_libs.js'))
 		.pipe(gulp.dest('dist/js'));
 
-	gulp.src(['js/*.min.js'])
-		.pipe(uglify())
+	gulp.src([])
 		.pipe(gulp.dest('dist/js'));
 
-		gulp.src(['js/list/*.js', 'js/pwa.js', 'js/common.js'])
+	gulp.src(['js/list/*.js'])
 		.pipe(concat('list.js'))
 		.pipe(babel({
 			presets: ['env'],
@@ -120,7 +122,7 @@ gulp.task('scripts-dist', function () {
 		.pipe(uglify())
 		.pipe(gulp.dest('dist/js'));
 
-		gulp.src(['js/detail/*.js', 'js/pwa.js', 'js/common.js'])
+	gulp.src(['js/detail/*.js'])
 		.pipe(babel({
 			presets: ['env'],
 			ignore: '**/*.min.js'
@@ -140,7 +142,7 @@ gulp.task('copy-html', ['styles'], function () {
 });
 
 gulp.task('copy-images', function () {
-	 gulp.src('img/*')
+	gulp.src('img/*')
 		.pipe(gulp.dest('dist/img'));
 
 	return gulp.src(['icons/*'])

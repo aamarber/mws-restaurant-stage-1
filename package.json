@@ -25,7 +25,8 @@
     "gulp-sass": "^4.0.1",
     "gulp-uglify": "^3.0.0",
     "idb": "^2.1.1",
-    "gulp-style-inject": "^0.1.1"
+    "gulp-style-inject": "^0.1.1",
+    "moment": "^2.22.2"
   },
   "dependencies": {
     "grunt-responsive-images": "^0.1.6"

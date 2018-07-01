@@ -15,6 +15,7 @@
 </head>
 
 <body class="inside">
+    <link rel="preconnect" href="http://localhost:1337">
   <!-- Beginning header -->
   <header role="banner">
     <!-- Beginning nav -->
@@ -48,11 +49,47 @@
     <!-- Beginning restaurant -->
     <section id="restaurant-container" class="restaurant-container">
       <h2 id="restaurant-name" class="restaurant-name">
-        <button id="mapToggler" onclick="toggleMap()" title="Show restaurants on a map">
+        <button id="mapToggler" onclick="toggleMap()" title="Show restaurants on a map" class="button-with-icon">
           <img alt="Map" class="btn_toggle" src="./icons/icon-map-black.svg" width="30" height="30">
           </img>
         </button>
       </h2>
+
+      <section id="reviews-form-container" class="reviews-form-container">
+        <div id="stars-container" class="stars" data-stars="1" onclick="showReviewsForm(event)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48" class="star rating star-1" onclick="setRating(1)" data-rating="1">
+            <path fill="none" stroke="#000" d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48" class="star rating star-2" onclick="setRating(2)" data-rating="2">
+            <path fill="none" stroke="#000" d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48" class="star rating star-3" onclick="setRating(3)" data-rating="3">
+            <path fill="none" stroke="#000" d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48" class="star rating star-4" onclick="setRating(4)" data-rating="4">
+            <path fill="none" stroke="#000" d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z" />
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48" class="star rating star-5" onclick="setRating(5)" data-rating="5">
+            <path fill="none" stroke="#000" d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z" />
+          </svg>
+        </div>
+
+        <form id="review-form" style="display:none" onSubmit="sendReview(event)">
+          <div class="row">
+            <label for="name">Your name:</label>
+            <input type="text" id="name">
+          </div>
+          <div class="row">
+            <label for="comments">You want to send a
+              <span id="stars-value-review-form"></span> Stars review. Please, can you explain why?</label>
+            <textarea id="comments"></textarea>
+          </div>
+          <div class="row">
+            <button type="submit">Send Review</button>
+          </div>
+          </div>
+      </section>
+
       <picture id="restaurant-img" class="restaurant-img"></picture>
       <p id="restaurant-cuisine" class="restaurant-cuisine"></p>
       <p id="restaurant-address" class="restaurant-address"></p>
@@ -76,9 +113,8 @@
   <!-- End footer -->
 
   <!-- Beginning scripts -->
-  <script async defer src="/js/blazy.min.js"></script>
-  <script src="/js/dbhelper.js"></script>
-  <script src="/js/idb.js"></script>
+  <script src="/js/libs.js"></script>
+  <script src="/js/external_libs.js"></script>
   <script type="application/javascript" charset="utf-8" src="/js/detail.js"></script>
   <!-- Google Maps -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGsSWsuyjgHVk61MPjDWs-ejcCS-Rgfuc&libraries=places&callback=initMap"></script>

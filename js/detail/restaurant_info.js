@@ -8,13 +8,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
     initLazyLoading();
   });
 
-  fetchRestaurantReviewsFromURL().then(reviews => {
-    fillReviewsHTML(reviews);
-  });
-  
+  fetchAndShowReviews();
 
   initServiceWorker();
 });
+
+let fetchAndShowReviews = () =>{
+  fetchRestaurantReviewsFromURL().then(reviews => {
+    fillReviewsHTML(reviews);
+  });
+}
 
 /**
  * Initialize Google map, called from HTML.
@@ -62,9 +65,7 @@ let fetchRestaurantFromURL = () => {
  * Get current restaurant reviews from page URL.
  */
 let fetchRestaurantReviewsFromURL = () => {
-  if (self.reviews) { // restaurant already fetched!
-    return Promise.resolve(self.restaurant);
-  }
+
   const id = getParameterByName('id');
   if (!id) { // no id found in URL
     const error = 'No restaurant id in URL'
@@ -161,6 +162,8 @@ let fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours)
  * Create all reviews HTML and add them to the webpage.
  */
 let fillReviewsHTML = (reviews) => {
+  fillReviewStars(reviews);
+
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
@@ -203,7 +206,7 @@ let createReviewHTML = (review) => {
   reviewHeader.appendChild(name);
 
   const date = document.createElement('h4');
-  date.innerHTML = review.date;
+  date.innerHTML = moment(review.updatedAt).format('L');
   reviewHeader.appendChild(date);
 
   const rating = document.createElement('p');
@@ -216,6 +219,79 @@ let createReviewHTML = (review) => {
   reviewArticle.appendChild(comments);
 
   return li;
+}
+
+/**
+ * Calculates the average rating and fills the corresponding stars based on that average
+ * @param {*} reviews 
+ */
+let fillReviewStars = (reviews) => {
+  var ratings = reviews.map(x => {
+    return Number(x.rating);
+  });
+
+  var average = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+
+  var absoluteAverage = Math.round(average);
+
+  setRating(absoluteAverage);
+}
+
+let showReviewsForm = () => {
+
+  var reviewsForm = document.getElementById('review-form');
+
+  reviewsForm.style.display = '';
+
+  var starsLabel = document.getElementById('stars-value-review-form');
+
+  starsLabel.innerText = getRating();
+}
+
+let hideReviewsForm = () => {
+
+  var reviewsForm = document.getElementById('review-form');
+
+  reviewsForm.style.display = 'none';
+
+  document.getElementById('name').value = '';
+
+  document.getElementById('comments').value = '';
+}
+
+let setRating = (rating) => {
+  const container = document.getElementById('stars-container');
+
+  container.setAttribute('data-stars', rating);
+}
+
+let getRating = () => {
+  const container = document.getElementById('stars-container');
+
+  return container.getAttribute('data-stars');
+}
+
+let sendReview = (event) => {
+  event.preventDefault();
+
+  var name = document.getElementById('name').value;
+
+  var comments = document.getElementById('comments').value;
+
+  var rating = getRating();
+
+  var review = {
+    "name": name,
+    "rating": rating,
+    "comments": comments,
+    "restaurant_id": getParameterByName('id')
+  };
+
+  return dbHelper.postReview(review).then(() => {
+    hideReviewsForm();
+
+    fetchAndShowReviews();
+  });
 }
 
 /**

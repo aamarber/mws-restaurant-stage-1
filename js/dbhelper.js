@@ -225,6 +225,21 @@ class DBHelper {
   }
 
   /**
+   * Sends a review to be saved
+   * @param {*} review 
+   */
+  postReview(review) {
+    return fetch(this.urlForPostRestaurantReviews(), {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(review)
+    });
+  }
+
+  /**
    * Map marker for a restaurant.
    */
   mapMarkerForRestaurant(restaurant, map) {
@@ -274,11 +289,18 @@ class DBHelper {
     return (`/img/${restaurant.id}-${sizesSuffixes[size]}.jpg`);
   }
 
-    /**
- * Restaurant reviews URL.
- */
-urlForRestaurantReviews(restaurantId) {
-  return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/reviews/?restaurant_id=${restaurantId}`;
-}
+  /**
+* Restaurant reviews URL.
+*/
+  urlForRestaurantReviews(restaurantId) {
+    return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/reviews/?restaurant_id=${restaurantId}`;
+  }
+
+  /**
+* Restaurant reviews POST URL.
+*/
+  urlForPostRestaurantReviews() {
+    return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/reviews/`;
+  }
 
 }

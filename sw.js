@@ -16,7 +16,8 @@ self.addEventListener('install', function (event) {
       return cache.addAll([
         '/index.html',
         '/restaurant.html',
-        `/${jsFolder}/all.js`,
+        `/${jsFolder}/libs.js`,
+        `/${jsFolder}/external_libs.js`,
         `/${jsFolder}/detail.js`,
         `/${jsFolder}/list.js`,
         '/css/styles-restaurant.css',
