@@ -250,3 +250,13 @@ svg.star.rating{
   width: fit-content;
   margin: 1em auto 1em auto;
 }
+
+#review-form > .row > label{
+  text-align: left;
+}
+
+.review-submit-success > svg, .review-submit-error > svg
+{
+width: 10em;
+height: 10em;
+}

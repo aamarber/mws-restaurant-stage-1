@@ -72,7 +72,7 @@ let fetchRestaurantReviewsFromURL = () => {
     return Promise.reject(error);
   }
 
-  return dbHelper.fetchReviews(id).then(
+  return dbHelper.fetchReviews(Number(id)).then(
     reviews => {
       self.reviews = reviews;
 
@@ -284,14 +284,26 @@ let sendReview = (event) => {
     "name": name,
     "rating": rating,
     "comments": comments,
-    "restaurant_id": getParameterByName('id')
+    "restaurant_id": Number(getParameterByName('id'))
   };
 
   return dbHelper.postReview(review).then(() => {
     hideReviewsForm();
 
+    showSuccessMessage();
+
     fetchAndShowReviews();
   });
+}
+
+let showSuccessMessage = () =>{
+  var successMessage = document.getElementById('review-submit-success');
+
+  successMessage.style.display = '';
+
+  window.setTimeout(() => {
+    successMessage.style.display = 'none';
+  }, 2000);
 }
 
 /**
