@@ -33,7 +33,7 @@
         <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" aria-label="Select cuisine type">
           <option value="all">All Cuisines</option>
         </select>
-        <button onclick="toggleMap()" title="Show restaurants on a map">
+        <button onclick="toggleMap()" title="Show restaurants on a map" class="button-with-icon">
           <img alt="Map" class="btn_toggle" src="./icons/icon-map.svg" width="30" height="30">
           </img>
         </button>
@@ -63,9 +63,8 @@
   };
 </script>
 
-<script async defer src="/js/blazy.min.js"></script>
-<script src="/js/dbhelper.js"></script>
-<script src="/js/idb.js"></script>
+<script src="/js/libs.js"></script>
+<script src="/js/external_libs.js"></script>
 <script src="/js/list.js"></script>
 
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGsSWsuyjgHVk61MPjDWs-ejcCS-Rgfuc&libraries=places&callback=initMap"></script>

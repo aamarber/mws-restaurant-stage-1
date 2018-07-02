@@ -10,6 +10,8 @@ class DBHelper {
 
     this.dbPromise = idb.open('restaurants-store', 1, upgradeDB => {
       upgradeDB.createObjectStore('restaurants');
+      var reviewsStore = upgradeDB.createObjectStore('restaurantReviews');
+      reviewsStore.createIndex('restaurant_id', 'restaurant_id', { unique: false });
     });
   }
 
@@ -208,19 +210,92 @@ class DBHelper {
       });
   }
 
+  getRestaurantReviews(restaurantId) {
+    this._restaurantReviews = this._restaurantReviews || {};
+
+    if (this._restaurantReviews && this._restaurantReviews[restaurantId]) {
+      return Promise.resolve(this._restaurantReviews[restaurantId]);
+    }
+
+    return this.dbPromise.then(db => {
+      return db.transaction('restaurantReviews').objectStore('restaurantReviews').index('restaurant_id').getAll(restaurantId).then(
+        reviews => {
+          if (!reviews || reviews.length <= 0) {
+            return Promise.reject();
+          }
+
+          this._restaurantReviews[restaurantId] = reviews;
+
+          return this._restaurantReviews[restaurantId];
+        });
+    });
+  }
+
+  setRestaurantReviews(restaurantId, reviews) {
+    this._restaurantReviews = this._restaurantReviews || {};
+
+    return this.dbPromise.then(db => {
+      const transaction = db.transaction('restaurantReviews', 'readwrite');
+
+      reviews.forEach(review => {
+        transaction.objectStore('restaurantReviews').put(review, review.id);
+      })
+
+
+      return transaction.complete.then(() => {
+        this._restaurantReviews[restaurantId] = reviews;
+
+        return Promise.resolve(this._restaurantReviews[restaurantId]);
+      });
+    });
+  }
+
   /**
    * Fetch a restaurant reviews by the restaurant ID.
    * @param {number} id 
    * @param {function} callback 
    */
   fetchReviews(restaurantId) {
-    return fetch(this.urlForRestaurantReviews(restaurantId)).then(result => {
-      if (result.status === 200) {
-        return result.json();
-      }
-      else {
-        Promise.reject(error);
-      }
+    return this.getRestaurantReviews(restaurantId).then(
+      reviews => {
+        return reviews
+      },
+      error => {
+        return fetch(this.urlForRestaurantReviews(restaurantId)).then(result => {
+          if (result.status === 200) {
+            return result.json().then(reviews => {
+              return this.setRestaurantReviews(restaurantId, reviews);
+            });
+          }
+          else {
+            Promise.reject(error);
+          }
+        });
+      });
+
+  }
+
+  /**
+   * Sends a review to be saved
+   * @param {*} review 
+   */
+  postReview(review) {
+    return fetch(this.urlForPostRestaurantReviews(), {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(review)
+    }).then(response => {
+      response.json().then(review => {
+        this.getRestaurantReviews(review.restaurant_id).then(updatedReviews => {
+          updatedReviews.push(review);
+
+          return this.setRestaurantReviews(review.restaurant_id, updatedReviews);
+        })
+      });
+
     });
   }
 
@@ -274,11 +349,18 @@ class DBHelper {
     return (`/img/${restaurant.id}-${sizesSuffixes[size]}.jpg`);
   }
 
-    /**
- * Restaurant reviews URL.
- */
-urlForRestaurantReviews(restaurantId) {
-  return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/reviews/?restaurant_id=${restaurantId}`;
-}
+  /**
+* Restaurant reviews URL.
+*/
+  urlForRestaurantReviews(restaurantId) {
+    return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/reviews/?restaurant_id=${restaurantId}`;
+  }
+
+  /**
+* Restaurant reviews POST URL.
+*/
+  urlForPostRestaurantReviews() {
+    return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/reviews/`;
+  }
 
 }

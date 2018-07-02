@@ -16,11 +16,13 @@ self.addEventListener('install', function (event) {
       return cache.addAll([
         '/index.html',
         '/restaurant.html',
-        `/${jsFolder}/all.js`,
+        `/${jsFolder}/libs.js`,
+        `/${jsFolder}/external_libs.js`,
         `/${jsFolder}/detail.js`,
         `/${jsFolder}/list.js`,
         '/css/styles-restaurant.css',
-        '/css/styles.css'
+        '/css/styles.css',
+        '/manifest.json'
       ]);
     })
   );
@@ -64,13 +66,18 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  if (requestUrl.pathname.startsWith(`/${jsFolder}`)) {
+  if (requestUrl.pathname.startsWith(`/${jsFolder}`) || requestUrl.pathname.startsWith('/icons/')) {
     event.respondWith(serveStaticContent(event.request));
     return;
   }
 
   if (requestUrl.pathname.startsWith('/img/')) {
     event.respondWith(serveImage(event.request));
+    return;
+  }
+
+  if (requestUrl.pathname.startsWith('/icons/')) {
+    event.respondWith(serveIcon(event.request));
     return;
   }
 
@@ -90,6 +97,10 @@ function serveImage(request) {
   var storageUrl = request.url.replace(/-[0-9]*_[a-z]*.jpg$/, '');
 
   return serveContent(request, storageUrl, imagesCache);
+}
+
+function serveIcon(request) {
+  return serveContent(request, request.url, imagesCache);
 }
 
 function serveData(request) {

@@ -164,3 +164,99 @@ $color-orange: #c41c00;
 .btn_toggle{
   fill: black;
 }
+
+.reviews-form-container{
+  margin: 1em 0 1em;
+}
+
+.stars {
+  height: 3em;
+  cursor: pointer;
+  width: fit-content;
+  margin: auto;
+  
+	&:hover {
+    .star path {
+      fill: #ffd055;
+    }
+  }
+  
+	.star {
+    float: left;
+
+    path {
+      fill: #d8d8d8;
+    }
+
+    &:hover ~ .star {
+      path {
+        fill: #d8d8d8 !important;
+      }
+    }
+  }
+  
+  &[data-stars="1"] {
+    .star-1 path {
+      fill: #ffd055;
+    }
+  }
+  
+  &[data-stars="2"] {
+    .star-1 path,
+    .star-2 path {
+      fill: #ffd055;
+    }
+  }
+  
+  &[data-stars="3"] {
+    .star-1 path,
+    .star-2 path,
+    .star-3 path {
+      fill: #ffd055;
+    }
+  }
+  
+  &[data-stars="4"] {
+    .star-1 path,
+    .star-2 path,
+    .star-3 path,
+    .star-4 path {
+      fill: #ffd055;
+    }
+  }
+  
+  &[data-stars="5"] {
+    .star-1 path,
+    .star-2 path,
+    .star-3 path,
+    .star-4 path,
+    .star-5 path {
+      fill: #ffd055;
+    }
+  }
+}
+
+svg.star.rating{
+  width: 2em;
+  height: 100%;
+}
+
+#review-form > .row{
+  justify-content: start;
+  flex-direction: column;
+}
+
+#review-form button{
+  width: fit-content;
+  margin: 1em auto 1em auto;
+}
+
+#review-form > .row > label{
+  text-align: left;
+}
+
+.review-submit-success > svg, .review-submit-error > svg
+{
+width: 10em;
+height: 10em;
+}
