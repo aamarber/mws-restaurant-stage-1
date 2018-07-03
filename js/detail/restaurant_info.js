@@ -11,9 +11,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
   fetchAndShowReviews();
 
   initServiceWorker();
+
+  doDeferredOfflineTasks();
 });
 
-let fetchAndShowReviews = () =>{
+let fetchAndShowReviews = () => {
   fetchRestaurantReviewsFromURL().then(reviews => {
     fillReviewsHTML(reviews);
   });
@@ -287,22 +289,40 @@ let sendReview = (event) => {
     "restaurant_id": Number(getParameterByName('id'))
   };
 
-  return dbHelper.postReview(review).then(() => {
-    hideReviewsForm();
+  return dbHelper.postReview(review).then(
+    () => {
+      hideReviewsForm();
 
-    showSuccessMessage();
+      showSuccessMessage();
 
-    fetchAndShowReviews();
-  });
+      fetchAndShowReviews();
+    },
+    error => {
+      hideReviewsForm();
+
+      showErrorMessage();
+
+      fetchAndShowReviews();
+    });
 }
 
-let showSuccessMessage = () =>{
+let showSuccessMessage = () => {
   var successMessage = document.getElementById('review-submit-success');
 
   successMessage.style.display = '';
 
   window.setTimeout(() => {
     successMessage.style.display = 'none';
+  }, 2000);
+}
+
+let showErrorMessage = () => {
+  var errorMessage = document.getElementById('review-submit-error');
+
+  errorMessage.style.display = '';
+
+  window.setTimeout(() => {
+    errorMessage.style.display = 'none';
   }, 2000);
 }
 

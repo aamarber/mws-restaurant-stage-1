@@ -14,6 +14,8 @@ let initRestaurants = () => {
   fetchCuisines();
 
   initServiceWorker();
+
+  doDeferredOfflineTasks();
 }
 
 /**
