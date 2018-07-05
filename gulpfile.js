@@ -141,8 +141,11 @@ gulp.task('copy-images', function () {
 	gulp.src('img/*')
 		.pipe(gulp.dest('dist/img'));
 
-	return gulp.src(['icons/*'])
+	gulp.src(['icons/*'])
 		.pipe(gulp.dest('dist/icons'));
+
+	return gulp.src(['favicon.ico'])
+		.pipe(gulp.dest('dist/'));
 });
 
 gulp.task('styles', function () {

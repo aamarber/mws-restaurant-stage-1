@@ -14,6 +14,8 @@ let initRestaurants = () => {
   fetchCuisines();
 
   initServiceWorker();
+
+  doDeferredOfflineTasks();
 }
 
 /**
@@ -75,7 +77,7 @@ let fillCuisinesHTML = (cuisines = self.cuisines) => {
  * Initialize Google map, called from HTML.
  */
 let initMap = () => {
-  if(!mapIsEnabled()){
+  if (!mapIsEnabled()) {
     return;
   }
 
@@ -158,7 +160,7 @@ let fillRestaurantsHTML = (restaurants) => {
 
   initLazyLoading();
 
-  if(mapIsEnabled()){
+  if (mapIsEnabled()) {
     initMap();
   }
 }
@@ -170,9 +172,15 @@ let createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
   appendRestaurantImage(restaurant, li);
 
-  const name = document.createElement('h2');
+  const nameHeader = document.createElement('h2');
+
+  const name = document.createElement('span');
   name.innerHTML = restaurant.name;
-  li.appendChild(name);
+  nameHeader.appendChild(name);
+
+  appendFavoriteIcons(restaurant, nameHeader);
+
+  li.appendChild(nameHeader);
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
