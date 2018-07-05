@@ -217,11 +217,15 @@ class DBHelper {
       });
   }
 
+  /**
+   * Returns the restaurant reviews from IDB, even if they have been deferred because there's no connection
+   * @param {Number} restaurantId 
+   */
   getRestaurantReviews(restaurantId) {
     return this.dbPromise.then(db => {
       return db.transaction('restaurantReviews').objectStore('restaurantReviews').index('restaurant_id').getAll(restaurantId).then(reviews => {
 
-        return db.transaction('deferredReviews').objectStore('deferredReviews').index('restaurant_id').getAll(restaurantId).then(deferredReviews => {
+        return this.getDeferredRestaurantRevies(restaurantId, db).then(deferredReviews => {
 
           reviews = reviews.concat(deferredReviews);
 
@@ -233,6 +237,16 @@ class DBHelper {
         });
       });
     });
+  }
+
+  getDeferredRestaurantRevies(restaurantId, db) {
+    if (!db) {
+      return this.dbPromise.then(db => {
+        return db.transaction('deferredReviews').objectStore('deferredReviews').index('restaurant_id').getAll(restaurantId);
+      });
+    }
+
+    return db.transaction('deferredReviews').objectStore('deferredReviews').index('restaurant_id').getAll(restaurantId);
   }
 
   setRestaurantReviews(restaurantId, reviews) {
@@ -298,8 +312,8 @@ class DBHelper {
       },
       body: JSON.stringify(review)
     }).then(response => {
-      response.json().then(review => {
-        appendReview(review);
+      return response.json().then(review => {
+        return this.appendReview(review);
       });
 
     });
@@ -317,10 +331,51 @@ class DBHelper {
     return this.dbPromise.then(db => {
       const transaction = db.transaction('deferredReviews', 'readwrite');
 
-      transaction.objectStore('deferredReviews').put(review, Date.now());
+      review.id = Date.now();
+
+      transaction.objectStore('deferredReviews').put(review, review.id);
 
       return transaction.complete;
     });
+  }
+
+  deleteDeferredReview(reviewId) {
+    return this.dbPromise.then(db => {
+      const transaction = db.transaction('deferredReviews', 'readwrite');
+
+      transaction.objectStore('deferredReviews').delete(reviewId);
+
+      return transaction.complete;
+    });
+  }
+
+  setRestaurantFavorite(restaurantId, isFavorite) {
+    if (!isOnline()) {
+      return Promise.reject('OFFLINE');
+    }
+
+    return fetch(this.urlForMarkRestaurantFavorite(restaurantId, isFavorite), {
+      method: "PUT",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }).then(response => {
+      return response.json().then(review => {
+        return this.fetchRestaurants().then(restaurants => {
+          var restaurant = restaurants.find(x => x.id === restaurantId);
+
+          restaurant.is_favorite = isFavorite;
+
+          this.restaurants = restaurants;
+
+          return restaurant;
+        })
+      });
+
+    });
+
+
   }
 
   /**
@@ -381,10 +436,17 @@ class DBHelper {
   }
 
   /**
-* Restaurant reviews POST URL.
-*/
+  * Restaurant reviews POST URL.
+  */
   urlForPostRestaurantReviews() {
     return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/reviews/`;
+  }
+
+  /**
+  * Restaurant reviews POST URL.
+  */
+  urlForMarkRestaurantFavorite(restaurantId, isFavorite) {
+    return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/restaurants/${restaurantId}?is_favorite=${isFavorite}`;
   }
 
 }

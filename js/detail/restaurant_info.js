@@ -43,11 +43,7 @@ let fetchRestaurantFromURL = () => {
   if (self.restaurant) { // restaurant already fetched!
     return Promise.resolve(self.restaurant);
   }
-  const id = getParameterByName('id');
-  if (!id) { // no id found in URL
-    const error = 'No restaurant id in URL'
-    return Promise.reject(error);
-  }
+  const id = getRestaurantId();
 
   return dbHelper.fetchRestaurantById(id).then(
     restaurant => {
@@ -68,7 +64,7 @@ let fetchRestaurantFromURL = () => {
  */
 let fetchRestaurantReviewsFromURL = () => {
 
-  const id = getParameterByName('id');
+  const id = getRestaurantId();
   if (!id) { // no id found in URL
     const error = 'No restaurant id in URL'
     return Promise.reject(error);
@@ -99,6 +95,8 @@ let fillRestaurantHTML = (restaurant) => {
   restaurantName.innerText = restaurant.name;
 
   name.insertBefore(restaurantName, mapToggler);
+
+  appendFavoriteIcons(restaurant, name, mapToggler);
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
@@ -167,6 +165,11 @@ let fillReviewsHTML = (reviews) => {
   fillReviewStars(reviews);
 
   const container = document.getElementById('reviews-container');
+
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
+
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
@@ -286,7 +289,7 @@ let sendReview = (event) => {
     "name": name,
     "rating": rating,
     "comments": comments,
-    "restaurant_id": Number(getParameterByName('id'))
+    "restaurant_id": Number(getRestaurantId())
   };
 
   return dbHelper.postReview(review).then(
@@ -334,20 +337,4 @@ let fillBreadcrumb = (restaurant = self.restaurant) => {
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
   breadcrumb.appendChild(li);
-}
-
-/**
- * Get a parameter by name from page URL.
- */
-let getParameterByName = (name, url) => {
-  if (!url)
-    url = window.location.href;
-  name = name.replace(/[\[\]]/g, '\\$&');
-  const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
-    results = regex.exec(url);
-  if (!results)
-    return null;
-  if (!results[2])
-    return '';
-  return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
