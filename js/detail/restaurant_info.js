@@ -10,8 +10,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
   fetchAndShowReviews();
 
-  initServiceWorker();
-
   doDeferredOfflineTasks();
 });
 
@@ -77,10 +75,8 @@ let fetchRestaurantReviewsFromURL = () => {
       return reviews;
     },
     error => {
-      if (!reviews) {
-        console.error(error);
-        return error;
-      }
+      console.error(error);
+      return error;
     });
 }
 

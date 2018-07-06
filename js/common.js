@@ -30,16 +30,6 @@ let initLazyLoading = () => {
   });
 }
 
-let initServiceWorker = () => {
-  if (!('serviceWorker' in navigator)) {
-    return;
-  }
-
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/sw.js');
-  });
-}
-
 const mapIsEnabled = () => {
   return document.getElementById('map').style.display !== 'none';
 }
@@ -74,6 +64,14 @@ let doDeferredOfflineTasks = () => {
       return dbHelper.postReview(review).then(() => {
         return dbHelper.deleteDeferredReview(deferredReviewId);
       });
+    });
+  });
+
+  dbHelper.getDeferredFavorites().then(favorites => {
+    favorites.forEach(favorite => {
+      return dbHelper.setRestaurantFavorite(favorite.restaurantId, favorite.isFavorite).then(() => {
+        return dbHelper.deleteDeferredFavorite(favorite.restaurantId);
+      });
     })
   })
 }
@@ -104,13 +102,15 @@ let getParameterByName = (name, url) => {
 }
 
 let appendFavoriteIcons = (restaurant, nameHeaderElement, insertBeforeElement) => {
+  var isFavorite = restaurant.is_favorite === 'false' ? false : true;
+
   const likeAlt = `Unmark ${restaurant.name} as favorite restaurant`;
   const likeButton = document.createElement('button');
   likeButton.id = `like-${restaurant.id}`;
   likeButton.className = 'button-with-icon';
   likeButton.title = likeAlt;
   likeButton.onclick = function () { unfavoriteRestaurant(restaurant.id); };
-  likeButton.style.display = restaurant.is_favorite ? '' : 'none';
+  likeButton.style.display = isFavorite ? '' : 'none';
 
   const like = document.createElement('img');
   like.className = 'favorite';
@@ -125,7 +125,7 @@ let appendFavoriteIcons = (restaurant, nameHeaderElement, insertBeforeElement) =
   heartButton.className = 'button-with-icon';
   heartButton.title = heartAlt;
   heartButton.onclick = function () { favoriteRestaurant(restaurant.id); };
-  heartButton.style.display = !restaurant.is_favorite ? '' : 'none';
+  heartButton.style.display = !isFavorite ? '' : 'none';
 
   const heart = document.createElement('img');
   heart.className = 'not-favorite';
