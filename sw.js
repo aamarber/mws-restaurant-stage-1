@@ -50,40 +50,45 @@ self.addEventListener('message', function (event) {
 });
 
 self.addEventListener('fetch', function (event) {
-  var requestUrl = new URL(event.request.url);
+  try {
+    var requestUrl = new URL(event.request.url);
 
-  if (requestUrl.origin !== location.origin || requestUrl.pathname.indexOf('sw.js') !== -1) {
-    return;
+    if (requestUrl.origin !== location.origin || requestUrl.pathname.indexOf('sw.js') !== -1) {
+      return;
+    }
+
+    if (requestUrl.pathname === '/') {
+      event.respondWith(serveContent(event.request, '/index.html', staticCache));
+      return;
+    }
+
+    if (requestUrl.pathname.startsWith('/css')) {
+      event.respondWith(serveStaticContent(event.request));
+      return;
+    }
+
+    if (requestUrl.pathname.startsWith(`/${jsFolder}`) || requestUrl.pathname.startsWith('/icons/')) {
+      event.respondWith(serveStaticContent(event.request));
+      return;
+    }
+
+    if (requestUrl.pathname.startsWith('/img/')) {
+      event.respondWith(serveImage(event.request));
+      return;
+    }
+
+    if (requestUrl.pathname.startsWith('/icons/')) {
+      event.respondWith(serveIcon(event.request));
+      return;
+    }
+
+    if (requestUrl.pathname.startsWith('/restaurant.html')) {
+      event.respondWith(serveRestaurantContent(event.request));
+      return;
+    }
   }
-
-  if (requestUrl.pathname === '/') {
-    event.respondWith(serveContent(event.request, '/index.html', staticCache));
-    return;
-  }
-
-  if (requestUrl.pathname.startsWith('/css')) {
-    event.respondWith(serveStaticContent(event.request));
-    return;
-  }
-
-  if (requestUrl.pathname.startsWith(`/${jsFolder}`) || requestUrl.pathname.startsWith('/icons/')) {
-    event.respondWith(serveStaticContent(event.request));
-    return;
-  }
-
-  if (requestUrl.pathname.startsWith('/img/')) {
-    event.respondWith(serveImage(event.request));
-    return;
-  }
-
-  if (requestUrl.pathname.startsWith('/icons/')) {
-    event.respondWith(serveIcon(event.request));
-    return;
-  }
-
-  if (requestUrl.pathname.startsWith('/restaurant.html')) {
-    event.respondWith(serveRestaurantContent(event.request));
-    return;
+  catch (error) {
+    console.log(error);
   }
 });
 
@@ -115,7 +120,7 @@ function serveRestaurantContent(request) {
   return serveContent(request, url, restaurantsCache);
 }
 
-function serveContent(request, cacheKey, cache){
+function serveContent(request, cacheKey, cache) {
   return caches.open(cache).then(function (cache) {
     return cache.match(cacheKey).then(function (response) {
       if (response)

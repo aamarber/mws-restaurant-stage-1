@@ -20,7 +20,7 @@
       </h1>
     </nav>
   </header>
-  <div class="maincontent">
+  <main class="maincontent">
     <section id="map-container">
       <div id="map" class="map" role="application" style="display:none"></div>
     </section>
@@ -35,7 +35,6 @@
         </select>
         <button onclick="toggleMap()" title="Show restaurants on a map" class="button-with-icon">
           <img alt="Map" class="btn_toggle" src="./icons/icon-map.svg" width="30" height="30">
-          </img>
         </button>
       </div>
     </section>
@@ -48,25 +47,31 @@
       <!-- As this section is going to be filled with js code, I've used aria-live to notify the screen reader -->
       <ul id="restaurants-list" class="restaurants-list" aria-live="assertive"></ul>
     </section>
-    </main>
-    <footer>
-      Copyright (c) 2017
-      <a href="/">
-        <strong>Restaurant Reviews</strong>
-      </a> All Rights Reserved.
-    </footer>
-
+  </main>
+  <footer>
+    Copyright (c) 2017
+    <a href="/">
+      <strong>Restaurant Reviews</strong>
+    </a> All Rights Reserved.
+  </footer>
 </body>
-<script>
-  window.lazyLoadOptions = {
-    /* your lazyload options */
-  };
-</script>
 
 <script src="/js/libs.js"></script>
 <script src="/js/external_libs.js"></script>
 <script src="/js/list.js"></script>
 
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGsSWsuyjgHVk61MPjDWs-ejcCS-Rgfuc&libraries=places&callback=initMap"></script>
+
+<script>
+  (function(){
+  if (!('serviceWorker' in navigator)) {
+    return;
+  }
+
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js');
+  });
+})();
+</script>
 
 </html>

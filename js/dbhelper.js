@@ -9,16 +9,13 @@ class DBHelper {
     this.protocol = protocol || 'http';
 
     this.dbPromise = idb.open('restaurants-store', 2, upgradeDB => {
-      if (upgradeDB.oldVersion === 0) {
-        upgradeDB.createObjectStore('restaurants');
+      upgradeDB.createObjectStore('restaurants');
 
-        const reviewsStore = upgradeDB.createObjectStore('restaurantReviews');
-        reviewsStore.createIndex('restaurant_id', 'restaurant_id', { unique: false });
-      }
-
-
+      const reviewsStore = upgradeDB.createObjectStore('restaurantReviews');
+      reviewsStore.createIndex('restaurant_id', 'restaurant_id', { unique: false });
       const deferredReviewsStore = upgradeDB.createObjectStore('deferredReviews');
       deferredReviewsStore.createIndex('restaurant_id', 'restaurant_id', { unique: false });
+      upgradeDB.createObjectStore('deferredFavorites');
     });
   }
 
@@ -349,9 +346,41 @@ class DBHelper {
     });
   }
 
+  deferFavorite(restaurantId, isFavorite) {
+    return this.dbPromise.then(db => {
+      const transaction = db.transaction('deferredFavorites', 'readwrite');
+
+      const favorite = { restaurantId: restaurantId, isFavorite: isFavorite };
+
+      transaction.objectStore('deferredFavorites').put(favorite, favorite.restaurantId);
+
+      return transaction.complete;
+    });
+  }
+
+  deleteDeferredFavorite(restaurantId) {
+    return this.dbPromise.then(db => {
+      const transaction = db.transaction('deferredFavorites', 'readwrite');
+
+      transaction.objectStore('deferredFavorites').delete(restaurantId);
+
+      return transaction.complete;
+    });
+  }
+
+  getDeferredFavorites() {
+    return this.dbPromise.then(db => {
+      const transaction = db.transaction('deferredFavorites', 'readwrite');
+
+      return transaction.objectStore('deferredFavorites').getAll();
+    });
+  }
+
   setRestaurantFavorite(restaurantId, isFavorite) {
     if (!isOnline()) {
-      return Promise.reject('OFFLINE');
+      return this.deferFavorite(restaurantId, isFavorite).then(() => {
+        return this.updateRestaurantFavorite(restaurantId, isFavorite);
+      });
     }
 
     return fetch(this.urlForMarkRestaurantFavorite(restaurantId, isFavorite), {
@@ -362,20 +391,22 @@ class DBHelper {
       }
     }).then(response => {
       return response.json().then(review => {
-        return this.fetchRestaurants().then(restaurants => {
-          var restaurant = restaurants.find(x => x.id === restaurantId);
-
-          restaurant.is_favorite = isFavorite;
-
-          this.restaurants = restaurants;
-
-          return restaurant;
-        })
+        return this.updateRestaurantFavorite(restaurantId, isFavorite);
       });
 
     });
+  }
 
+  updateRestaurantFavorite(restaurantId, isFavorite) {
+    return this.fetchRestaurants().then(restaurants => {
+      var restaurant = restaurants.find(x => x.id === restaurantId);
 
+      restaurant.is_favorite = isFavorite;
+
+      this.restaurants = restaurants;
+
+      return restaurant;
+    });
   }
 
   /**
@@ -394,8 +425,8 @@ class DBHelper {
   }
 
   /**
- * The url to get the list of restaurants
- */
+  * The url to get the list of restaurants
+  */
   get restaurantsListUrl() {
     return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/restaurants`;
   }
@@ -409,8 +440,8 @@ class DBHelper {
   }
 
   /**
- * Restaurant page URL.
- */
+  * Restaurant page URL.
+  */
   urlForRestaurant(restaurant) {
     return (`./restaurant.html?id=${restaurant.id}`);
   }
@@ -429,8 +460,8 @@ class DBHelper {
   }
 
   /**
-* Restaurant reviews URL.
-*/
+  * Restaurant reviews URL.
+  */
   urlForRestaurantReviews(restaurantId) {
     return `${this.protocol}://${this.domain}${this.port ? `:${this.port}` : ''}/reviews/?restaurant_id=${restaurantId}`;
   }

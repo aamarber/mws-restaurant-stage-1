@@ -13,8 +13,6 @@ let initRestaurants = () => {
   fetchNeighborhoods();
   fetchCuisines();
 
-  initServiceWorker();
-
   doDeferredOfflineTasks();
 }
 
